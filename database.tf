@@ -39,4 +39,11 @@ resource "aws_db_instance" "aap" {
     aws_security_group.public_subnets.id,
     aws_security_group.default_egress.id
   ]
+
+  lifecycle {
+    precondition {
+      condition     = var.rds_password != ""
+      error_message = "The 'rds_password' variable or 'TF_VAR_rds_password' environment variable must be set to a non-empty string"
+    }
+  }
 }

@@ -43,18 +43,18 @@ variable "deploy_single_node" {
 }
 variable "deploy_with_rds" {
   description = "Deploy an RDS PostgreSQL database"
-  type    = bool
-  default = falsl
+  type        = bool
+  default     = false
 }
 variable "deploy_bastion" {
   description = "Deploy an instance to use as a bastion host"
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
 }
 variable "deploy_with_rhel8" {
   description = "Deploy with RHEL 8 AMIs (otherwise use RHEL 9)"
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 # AMI-related variables
@@ -284,5 +284,6 @@ variable "rds_username" {
 variable "rds_password" {
   description = "Password for the root database user"
   type        = string
+  default     = ""
   sensitive   = true
 }

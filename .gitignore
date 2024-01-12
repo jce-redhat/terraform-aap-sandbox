@@ -1,0 +1,16 @@
+**/.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfvars
+terraform*.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
+*.tfoverride
+.terraformrc
+terraform.rc
+
+# normally not ignored for long-running environments, but since this is for
+# sandbox/demo creation we'll ignore it
+#
+# https://developer.hashicorp.com/terraform/language/files/dependency-lock
+.terraform.lock.hcl

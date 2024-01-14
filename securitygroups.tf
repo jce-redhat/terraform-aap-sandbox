@@ -1,6 +1,6 @@
-resource "aws_security_group" "ssh" {
-  name        = "${var.aws_name_prefix}-ssh"
-  description = "SSH (22/tcp) global ingress"
+resource "aws_security_group" "bastion" {
+  name        = "${var.aws_name_prefix}-bastion"
+  description = "Bastion ingress rules"
   vpc_id      = module.vpc.vpc_id
 
   ingress {
@@ -14,11 +14,18 @@ resource "aws_security_group" "ssh" {
   tags = local.aws_tags
 }
 
-resource "aws_security_group" "https" {
-  name        = "${var.aws_name_prefix}-https"
-  description = "HTTPS (443/tcp) global ingress"
+resource "aws_security_group" "controller" {
+  name        = "${var.aws_name_prefix}-controller"
+  description = "Controller ingress rules"
   vpc_id      = module.vpc.vpc_id
 
+  ingress {
+    description = "SSH"
+    from_port   = "22"
+    to_port     = "22"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   ingress {
     description = "HTTPS"
     from_port   = "443"
@@ -26,15 +33,6 @@ resource "aws_security_group" "https" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags = local.aws_tags
-}
-
-resource "aws_security_group" "automation_mesh" {
-  name        = "${var.aws_name_prefix}-automation-mesh"
-  description = "AAP automation mesh (21799/tcp) global ingress"
-  vpc_id      = module.vpc.vpc_id
-
   ingress {
     description = "Automation mesh"
     from_port   = "21799"
@@ -46,11 +44,48 @@ resource "aws_security_group" "automation_mesh" {
   tags = local.aws_tags
 }
 
-resource "aws_security_group" "eda_webhooks" {
-  name        = "${var.aws_name_prefix}-eda-webhooks"
-  description = "Global ingress for EDA webhook ports"
+resource "aws_security_group" "hub" {
+  name        = "${var.aws_name_prefix}-hub"
+  description = "Automation Hub ingress rules"
   vpc_id      = module.vpc.vpc_id
 
+  ingress {
+    description = "SSH"
+    from_port   = "22"
+    to_port     = "22"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "HTTPS"
+    from_port   = "443"
+    to_port     = "443"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = local.aws_tags
+}
+
+resource "aws_security_group" "eda" {
+  name        = "${var.aws_name_prefix}-eda"
+  description = "EDA ingress rules"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "SSH"
+    from_port   = "22"
+    to_port     = "22"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "HTTPS"
+    from_port   = "443"
+    to_port     = "443"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   ingress {
     description = "EDA Webhook ports"
     from_port   = var.eda_webhook_port_start
@@ -62,9 +97,9 @@ resource "aws_security_group" "eda_webhooks" {
   tags = local.aws_tags
 }
 
-resource "aws_security_group" "single_node_hub" {
-  name        = "${var.aws_name_prefix}-single-node-hub"
-  description = "Global ingress for Hub UI port on single-node deployments"
+resource "aws_security_group" "single_node" {
+  name        = "${var.aws_name_prefix}-single-node"
+  description = "Additional ingress rules for single node AAP deployments"
   vpc_id      = module.vpc.vpc_id
 
   ingress {
@@ -74,24 +109,45 @@ resource "aws_security_group" "single_node_hub" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags = local.aws_tags
-}
-
-resource "aws_security_group" "single_node_eda" {
-  name        = "${var.aws_name_prefix}-single-node-eda"
-  description = "Global ingress for EDA UI port on single-node deployments"
-  vpc_id      = module.vpc.vpc_id
-
   ingress {
-    description = "Hub UI on single node"
+    description = "EDA UI on single node"
     from_port   = var.single_node_eda_port
     to_port     = var.single_node_eda_port
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+    description = "EDA Webhook ports"
+    from_port   = var.eda_webhook_port_start
+    to_port     = var.eda_webhook_port_end
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   tags = local.aws_tags
+}
+
+# rules created separately for single_node_eips to avoid circular dependencies
+resource "aws_security_group" "single_node_eips" {
+  name        = "${var.aws_name_prefix}-single-node-eips"
+  description = "Ingress rules from single node EIPs"
+  vpc_id      = module.vpc.vpc_id
+
+  tags = local.aws_tags
+}
+
+# rules created separately for single_node_eips to avoid circular dependencies
+resource "aws_security_group_rule" "single_node_eips" {
+  count = var.deploy_single_node ? var.single_node_instance_count : 0
+
+  type        = "ingress"
+  description = "PostgreSQL from AAP EIPs"
+  from_port   = "5432"
+  to_port     = "5432"
+  protocol    = "tcp"
+  cidr_blocks = ["${aws_eip.single_node[count.index].public_ip}/32"]
+
+  security_group_id = aws_security_group.single_node_eips.id
 }
 
 resource "aws_security_group" "public_subnets" {

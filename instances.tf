@@ -18,12 +18,9 @@ resource "aws_instance" "single_node" {
   subnet_id     = module.vpc.public_subnets.0
 
   vpc_security_group_ids = [
-    aws_security_group.ssh.id,
-    aws_security_group.https.id,
-    aws_security_group.automation_mesh.id,
-    aws_security_group.single_node_hub.id,
-    aws_security_group.single_node_eda.id,
-    aws_security_group.public_subnets.id,
+    aws_security_group.controller.id,
+    aws_security_group.single_node.id,
+    aws_security_group.single_node_eips.id,
     aws_security_group.default_egress.id
   ]
   root_block_device {
@@ -55,10 +52,7 @@ resource "aws_instance" "controller" {
   subnet_id     = module.vpc.public_subnets.0
 
   vpc_security_group_ids = [
-    aws_security_group.ssh.id,
-    aws_security_group.https.id,
-    aws_security_group.automation_mesh.id,
-    aws_security_group.public_subnets.id,
+    aws_security_group.controller.id,
     aws_security_group.default_egress.id
   ]
   root_block_device {
@@ -90,9 +84,7 @@ resource "aws_instance" "hub" {
   subnet_id     = module.vpc.public_subnets.0
 
   vpc_security_group_ids = [
-    aws_security_group.ssh.id,
-    aws_security_group.https.id,
-    aws_security_group.public_subnets.id,
+    aws_security_group.hub.id,
     aws_security_group.default_egress.id
   ]
   root_block_device {
@@ -124,10 +116,7 @@ resource "aws_instance" "eda" {
   subnet_id     = module.vpc.public_subnets.0
 
   vpc_security_group_ids = [
-    aws_security_group.ssh.id,
-    aws_security_group.https.id,
-    aws_security_group.eda_webhooks.id,
-    aws_security_group.public_subnets.id,
+    aws_security_group.eda.id,
     aws_security_group.default_egress.id
   ]
   root_block_device {
@@ -159,8 +148,7 @@ resource "aws_instance" "bastion" {
   subnet_id     = module.vpc.public_subnets.0
 
   vpc_security_group_ids = [
-    aws_security_group.ssh.id,
-    aws_security_group.public_subnets.id,
+    aws_security_group.bastion.id,
     aws_security_group.default_egress.id
   ]
   root_block_device {

@@ -106,15 +106,20 @@ variable "single_node_instance_name" {
   type        = string
   default     = "aap-single-node"
 }
+variable "single_node_controller_port" {
+  description = "The port used by Controlelr on single node deployments"
+  type        = string
+  default     = "8443"
+}
 variable "single_node_hub_port" {
   description = "The port used by Hub on single node deployments"
   type        = string
-  default     = "444"
+  default     = "8444"
 }
 variable "single_node_eda_port" {
   description = "The port used by EDA on single node deployments"
   type        = string
-  default     = "445"
+  default     = "8445"
 }
 
 # Bastion variables
@@ -175,6 +180,11 @@ variable "controller_instance_name" {
   type        = string
   default     = "controller"
 }
+variable "controller_ui_port" {
+  description = "The Controller UI port"
+  type        = string
+  default     = "443"
+}
 
 # Hub variables
 variable "hub_instance_count" {
@@ -206,6 +216,11 @@ variable "hub_instance_name" {
   description = "The 'Name' tag applied to the hub(s)"
   type        = string
   default     = "hub"
+}
+variable "hub_ui_port" {
+  description = "The Hub UI port"
+  type        = string
+  default     = "443"
 }
 
 # EDA variables
@@ -248,6 +263,11 @@ variable "eda_webhook_port_end" {
   description = "Ending port number for EDA webhooks"
   type        = string
   default     = "5010"
+}
+variable "eda_ui_port" {
+  description = "The EDA UI port"
+  type        = string
+  default     = "443"
 }
 
 # RDS-related variables

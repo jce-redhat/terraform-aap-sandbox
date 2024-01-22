@@ -27,9 +27,9 @@ resource "aws_security_group" "controller" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    description = "HTTPS"
-    from_port   = "443"
-    to_port     = "443"
+    description = "Controller UI over HTTPS"
+    from_port   = var.controller_ui_port
+    to_port     = var.controller_ui_port
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -57,9 +57,9 @@ resource "aws_security_group" "hub" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    description = "HTTPS"
-    from_port   = "443"
-    to_port     = "443"
+    description = "Hub UI over HTTPS"
+    from_port   = var.hub_ui_port
+    to_port     = var.hub_ui_port
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -80,9 +80,9 @@ resource "aws_security_group" "eda" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    description = "HTTPS"
-    from_port   = "443"
-    to_port     = "443"
+    description = "EDA UI over HTTPS"
+    from_port   = var.eda_ui_port
+    to_port     = var.eda_ui_port
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -102,6 +102,13 @@ resource "aws_security_group" "single_node" {
   description = "Additional ingress rules for single node AAP deployments"
   vpc_id      = module.vpc.vpc_id
 
+  ingress {
+    description = "Controller UI on single node"
+    from_port   = var.single_node_controller_port
+    to_port     = var.single_node_controller_port
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   ingress {
     description = "Hub UI on single node"
     from_port   = var.single_node_hub_port

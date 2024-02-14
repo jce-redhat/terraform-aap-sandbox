@@ -169,9 +169,7 @@ resource "aws_security_group" "public_subnets" {
     cidr_blocks = module.vpc.public_subnets_cidr_blocks
   }
 
-  tags = {
-    Owner = var.aws_resource_owner
-  }
+  tags = local.aws_tags
 }
 
 resource "aws_security_group" "default_egress" {
@@ -186,7 +184,5 @@ resource "aws_security_group" "default_egress" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Owner = var.aws_resource_owner
-  }
+  tags = local.aws_tags
 }

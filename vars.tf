@@ -1,7 +1,8 @@
 # AWS-related variables
 variable "aws_region" {
-  type    = string
-  default = "us-west-2"
+  description = "AWS region where resources are created"
+  type        = string
+  default     = "us-west-2"
 }
 variable "aws_num_azs" {
   description = "Number of availability zones to use for VPC subnets"
@@ -10,8 +11,9 @@ variable "aws_num_azs" {
   default = 2
 }
 variable "aws_name_prefix" {
-  type    = string
-  default = "AAP-Sandbox"
+  description = "Prefix used for AWS resource names"
+  type        = string
+  default     = "AAP-Sandbox"
 }
 variable "aws_vpc_cidr" {
   description = "CIDR used for the AWS VPC"
@@ -23,8 +25,9 @@ variable "aws_dns_zone" {
   type        = string
 }
 variable "aws_resource_owner" {
-  type    = string
-  default = "John Q Citizen"
+  description = "String used for 'Owner' tag on AWS resources"
+  type        = string
+  default     = "John Q Citizen"
 }
 variable "aws_key_name" {
   description = "SSH key pair to associate with AWS instances"
@@ -60,16 +63,19 @@ variable "deploy_with_rhel8" {
 
 # AMI-related variables
 variable "rhel9_ami_name" {
-  type    = string
-  default = "RHEL-9.2*Hourly*"
+  description = "Search string for RHEL 9 AMI"
+  type        = string
+  default     = "RHEL-9.2*Hourly*"
 }
 variable "rhel8_ami_name" {
-  type    = string
-  default = "RHEL-8.8*Hourly*"
+  description = "Search string for RHEL 8 AMI"
+  type        = string
+  default     = "RHEL-8.8*Hourly*"
 }
 variable "rhel_arch" {
-  type    = string
-  default = "x86_64"
+  description = "CPU architecture to use for RHEL AMI"
+  type        = string
+  default     = "x86_64"
   validation {
     condition     = contains(["x86_64", "arm64"], var.rhel_arch)
     error_message = "Valid values are 'x86_64' or 'arm64'"
@@ -93,7 +99,7 @@ variable "single_node_image_id" {
   default     = ""
 }
 variable "single_node_key_name" {
-  description = ""
+  description = "Key pair name associated with AIO instance"
   type        = string
   default     = ""
 }
@@ -135,7 +141,7 @@ variable "bastion_image_id" {
   default     = ""
 }
 variable "bastion_key_name" {
-  description = ""
+  description = "Key pair name associated with the bastion"
   type        = string
   default     = ""
 }
@@ -167,7 +173,7 @@ variable "controller_image_id" {
   default     = ""
 }
 variable "controller_key_name" {
-  description = ""
+  description = "Key pair name associated with the controller"
   type        = string
   default     = ""
 }
@@ -204,7 +210,7 @@ variable "hub_image_id" {
   default     = ""
 }
 variable "hub_key_name" {
-  description = ""
+  description = "Key pair name associated with the hub"
   type        = string
   default     = ""
 }
@@ -241,7 +247,7 @@ variable "eda_image_id" {
   default     = ""
 }
 variable "eda_key_name" {
-  description = ""
+  description = "Key pair name associated with the EDA node(s)"
   type        = string
   default     = ""
 }

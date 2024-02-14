@@ -38,8 +38,9 @@ variable "aws_key_content" {
 
 # deployment options
 variable "deploy_single_node" {
-  type    = bool
-  default = true
+  description = "Deploy a single node for containerized AAP"
+  type        = bool
+  default     = false
 }
 variable "deploy_with_rds" {
   description = "Deploy an RDS PostgreSQL database"

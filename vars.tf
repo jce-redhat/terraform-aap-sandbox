@@ -111,10 +111,10 @@ variable "single_node_disk_size" {
 variable "single_node_instance_name" {
   description = "The 'Name' tag applied to the AIO instance"
   type        = string
-  default     = "aap-single-node"
+  default     = "aap"
 }
 variable "single_node_controller_port" {
-  description = "The port used by Controlelr on single node deployments"
+  description = "The port used by Controller on single node deployments"
   type        = string
   default     = "8443"
 }

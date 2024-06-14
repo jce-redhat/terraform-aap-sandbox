@@ -6,7 +6,7 @@ resource "aws_route53_record" "single_node" {
   count = var.deploy_single_node ? var.single_node_instance_count : 0
 
   zone_id = data.aws_route53_zone.aap_zone.zone_id
-  name    = "aap${count.index}.${var.aws_dns_zone}"
+  name    = "${var.single_node_instance_name}${count.index}.${var.aws_dns_zone}"
   type    = "A"
   ttl     = "300"
   records = [
@@ -18,7 +18,7 @@ resource "aws_route53_record" "controller" {
   count = var.deploy_single_node ? 0 : var.controller_instance_count
 
   zone_id = data.aws_route53_zone.aap_zone.zone_id
-  name    = "controller${count.index}.${var.aws_dns_zone}"
+  name    = "${var.controller_instance_name}${count.index}.${var.aws_dns_zone}"
   type    = "A"
   ttl     = "300"
   records = [
@@ -30,7 +30,7 @@ resource "aws_route53_record" "hub" {
   count = var.deploy_single_node ? 0 : var.hub_instance_count
 
   zone_id = data.aws_route53_zone.aap_zone.zone_id
-  name    = "hub${count.index}.${var.aws_dns_zone}"
+  name    = "${var.hub_instance_name}${count.index}.${var.aws_dns_zone}"
   type    = "A"
   ttl     = "300"
   records = [
@@ -42,7 +42,7 @@ resource "aws_route53_record" "eda" {
   count = var.deploy_single_node ? 0 : var.eda_instance_count
 
   zone_id = data.aws_route53_zone.aap_zone.zone_id
-  name    = "eda${count.index}.${var.aws_dns_zone}"
+  name    = "${var.eda_instance_name}${count.index}.${var.aws_dns_zone}"
   type    = "A"
   ttl     = "300"
   records = [

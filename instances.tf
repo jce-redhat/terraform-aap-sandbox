@@ -31,7 +31,7 @@ resource "aws_instance" "single_node" {
 
   tags = merge(local.aws_tags,
     {
-      Name = var.single_node_instance_name
+      Name = "${var.single_node_instance_name}${count.index}"
     }
   )
 }

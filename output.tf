@@ -1,3 +1,7 @@
+output "deployment_id" {
+  description = "Unique ID associated with this terraform deployment"
+  value       = local.deployment_id
+}
 output "single_node_public_fqdn" {
   description = "Public FQDN of the AAP AIO instance"
   value       = length(aws_instance.single_node) > 0 ? aws_route53_record.single_node.*.name : null

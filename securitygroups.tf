@@ -97,6 +97,29 @@ resource "aws_security_group" "eda" {
   tags = local.aws_tags
 }
 
+resource "aws_security_group" "gateway" {
+  name        = "${var.aws_name_prefix}-gateway"
+  description = "Automation Hub ingress rules"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "SSH"
+    from_port   = "22"
+    to_port     = "22"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "Gateway UI over HTTPS"
+    from_port   = var.gateway_ui_port
+    to_port     = var.gateway_ui_port
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = local.aws_tags
+}
+
 resource "aws_security_group" "single_node" {
   name        = "${var.aws_name_prefix}-single-node"
   description = "Additional ingress rules for single node AAP deployments"
@@ -130,11 +153,18 @@ resource "aws_security_group" "single_node" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+    description = "Gateway UI on single node"
+    from_port   = var.single_node_gateway_port
+    to_port     = var.single_node_gateway_port
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   tags = local.aws_tags
 }
 
-# rules created separately for single_node_eips to avoid circular dependencies
+# single_node_eips security group created separately to avoid circular dependencies
 resource "aws_security_group" "single_node_eips" {
   name        = "${var.aws_name_prefix}-single-node-eips"
   description = "Ingress rules from single node EIPs"
@@ -143,7 +173,7 @@ resource "aws_security_group" "single_node_eips" {
   tags = local.aws_tags
 }
 
-# rules created separately for single_node_eips to avoid circular dependencies
+# single_node_eips rules created separately to avoid circular dependencies
 resource "aws_security_group_rule" "single_node_eips" {
   count = var.deploy_single_node ? var.single_node_instance_count : 0
 

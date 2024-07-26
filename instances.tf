@@ -142,6 +142,39 @@ resource "aws_eip" "eda" {
   domain   = "vpc"
 }
 
+resource "aws_instance" "gateway" {
+  count = var.deploy_single_node ? 0 : var.gateway_instance_count
+
+  instance_type = var.gateway_instance_type
+  ami           = var.gateway_image_id != "" ? var.gateway_image_id : local.rhel_ami.id
+  key_name      = var.gateway_key_name != "" ? var.gateway_key_name : var.aws_key_name
+  subnet_id     = module.vpc.public_subnets.0
+
+  vpc_security_group_ids = [
+    aws_security_group.gateway.id,
+    aws_security_group.public_subnets.id,
+    aws_security_group.default_egress.id
+  ]
+  root_block_device {
+    volume_size = var.gateway_disk_size
+  }
+
+  associate_public_ip_address = true
+
+  tags = merge(local.aws_tags,
+    {
+      Name = "${var.gateway_instance_name}${count.index}"
+    }
+  )
+}
+
+resource "aws_eip" "gateway" {
+  count = var.deploy_single_node ? 0 : var.gateway_instance_count
+
+  instance = aws_instance.gateway[count.index].id
+  domain   = "vpc"
+}
+
 resource "aws_instance" "bastion" {
   count = var.deploy_bastion ? 1 : 0
 

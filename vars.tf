@@ -128,6 +128,11 @@ variable "single_node_eda_port" {
   type        = string
   default     = "8445"
 }
+variable "single_node_gateway_port" {
+  description = "The port used by Gateway on single node deployments"
+  type        = string
+  default     = "443"
+}
 
 # Bastion variables
 variable "bastion_instance_type" {
@@ -273,6 +278,43 @@ variable "eda_webhook_port_end" {
 }
 variable "eda_ui_port" {
   description = "The EDA UI port"
+  type        = string
+  default     = "443"
+}
+
+# Gateway variables
+variable "gateway_instance_count" {
+  description = "The number of gateway instances to create"
+  type        = number
+  default     = 0
+}
+variable "gateway_instance_type" {
+  description = "The instance type used for the gateway(s)"
+  type        = string
+  default     = "t3a.large"
+}
+variable "gateway_image_id" {
+  description = "The AMI ID used for the gateway(s)"
+  type        = string
+  default     = ""
+}
+variable "gateway_key_name" {
+  description = "Key pair name associated with the gateway"
+  type        = string
+  default     = ""
+}
+variable "gateway_disk_size" {
+  description = "The volume size used for the gateway(s)"
+  type        = number
+  default     = 40
+}
+variable "gateway_instance_name" {
+  description = "The 'Name' tag applied to the gateway(s)"
+  type        = string
+  default     = "gateway"
+}
+variable "gateway_ui_port" {
+  description = "The gateway UI port"
   type        = string
   default     = "443"
 }

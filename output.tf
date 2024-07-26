@@ -18,6 +18,10 @@ output "eda_public_fqdn" {
   description = "Public FQDN of the AAP EDA instance(s)"
   value       = length(aws_instance.eda) > 0 ? aws_route53_record.eda.*.name : null
 }
+output "gateway_public_fqdn" {
+  description = "Public FQDN of the AAP gateway instance(s)"
+  value       = length(aws_instance.gateway) > 0 ? aws_route53_record.gateway.*.name : null
+}
 output "bastion_public_fqdn" {
   description = "Public FQDN of the AAP bastion"
   value       = length(aws_instance.bastion) > 0 ? aws_route53_record.bastion[0].name : null

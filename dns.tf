@@ -50,6 +50,18 @@ resource "aws_route53_record" "eda" {
   ]
 }
 
+resource "aws_route53_record" "gateway" {
+  count = var.deploy_single_node ? 0 : var.gateway_instance_count
+
+  zone_id = data.aws_route53_zone.aap_zone.zone_id
+  name    = "${var.gateway_instance_name}${count.index}.${var.aws_dns_zone}"
+  type    = "A"
+  ttl     = "300"
+  records = [
+    aws_eip.gateway[count.index].public_ip
+  ]
+}
+
 resource "aws_route53_record" "bastion" {
   count = var.deploy_bastion ? 1 : 0
 

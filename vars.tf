@@ -21,27 +21,27 @@ variable "aws_vpc_cidr" {
   default     = "172.23.0.0/16"
 }
 variable "aws_dns_zone" {
-  description = "Base DNS zone for AAP records"
+  description = "(Required) Base DNS zone for AAP records"
   type        = string
 }
 variable "aws_resource_owner" {
-  description = "String used for 'Owner' tag on AWS resources"
+  description = "Value of the 'Owner' tag on AWS resources"
   type        = string
-  default     = "John Q Citizen"
+  default     = "AAP-Sandbox User"
 }
 variable "aws_key_name" {
-  description = "SSH key pair to associate with AWS instances"
+  description = "Name of the default EC2 key pair to create and associate with AWS instances"
   type        = string
   default     = "aap-sandbox-key"
 }
 variable "aws_key_content" {
-  description = "SSH public key to use for the sandbox key pair"
+  description = "(Required) SSH public key to use for the default EC2 key pair"
   type        = string
 }
 
 # deployment options
 variable "deploy_single_node" {
-  description = "Deploy a single node for containerized AAP"
+  description = "Deploy a single-node for containerized AAP"
   type        = bool
   default     = false
 }
@@ -65,12 +65,12 @@ variable "deploy_with_rhel8" {
 variable "rhel9_ami_name" {
   description = "Search string for RHEL 9 AMI"
   type        = string
-  default     = "RHEL-9.2*Hourly*"
+  default     = "RHEL-9.4*Hourly*"
 }
 variable "rhel8_ami_name" {
   description = "Search string for RHEL 8 AMI"
   type        = string
-  default     = "RHEL-8.8*Hourly*"
+  default     = "RHEL-8.10*Hourly*"
 }
 variable "rhel_arch" {
   description = "CPU architecture to use for RHEL AMI"
@@ -84,52 +84,55 @@ variable "rhel_arch" {
 
 # single-node AAP variables
 variable "single_node_instance_count" {
-  description = "The number of single-node instances to create"
+  description = <<EOF
+    The number of single-node instances to create when the
+    deploy_single_node variable is set to "true"
+  EOF
   type        = number
   default     = 1
 }
 variable "single_node_instance_type" {
-  description = "The instance type used for the AIO instance"
+  description = "The instance type used for the single-node instance"
   type        = string
   default     = "t3a.xlarge"
 }
 variable "single_node_image_id" {
-  description = "The AMI ID used for the AIO instance"
+  description = "The AMI ID used for the single-node instance"
   type        = string
   default     = ""
 }
 variable "single_node_key_name" {
-  description = "Key pair name associated with AIO instance"
+  description = "EC2 key pair associated with the single-node instance"
   type        = string
   default     = ""
 }
 variable "single_node_disk_size" {
-  description = "The volume size used for the AIO instance"
+  description = "The volume size in GB used for the single-node instance"
   type        = number
   default     = 40
 }
 variable "single_node_instance_name" {
-  description = "The 'Name' tag applied to the AIO instance"
+  description = "The 'Name' tag applied to the single-node instance"
   type        = string
   default     = "aap"
 }
 variable "single_node_controller_port" {
-  description = "The port used by Controller on single node deployments"
+  description = "The port used by Controller on single-node deployments"
   type        = string
   default     = "8443"
 }
 variable "single_node_hub_port" {
-  description = "The port used by Hub on single node deployments"
+  description = "The port used by Hub on single-node deployments"
   type        = string
   default     = "8444"
 }
 variable "single_node_eda_port" {
-  description = "The port used by EDA on single node deployments"
+  description = "The port used by EDA on single-node deployments"
   type        = string
   default     = "8445"
 }
 variable "single_node_gateway_port" {
-  description = "The port used by Gateway on single node deployments"
+  description = "The port used by Gateway on single-node deployments"
   type        = string
   default     = "443"
 }
@@ -146,12 +149,12 @@ variable "bastion_image_id" {
   default     = ""
 }
 variable "bastion_key_name" {
-  description = "Key pair name associated with the bastion"
+  description = "EC2 key pair associated with the bastion instance"
   type        = string
   default     = ""
 }
 variable "bastion_disk_size" {
-  description = "The volume size used for the bastion"
+  description = "The volume size in GB used for the bastion"
   type        = number
   default     = 15
 }
@@ -178,12 +181,12 @@ variable "controller_image_id" {
   default     = ""
 }
 variable "controller_key_name" {
-  description = "Key pair name associated with the controller"
+  description = "EC2 key pair associated with the controller instance"
   type        = string
   default     = ""
 }
 variable "controller_disk_size" {
-  description = "The volume size used for the controller(s)"
+  description = "The volume size in GB used for the controller(s)"
   type        = number
   default     = 40
 }
@@ -215,12 +218,12 @@ variable "hub_image_id" {
   default     = ""
 }
 variable "hub_key_name" {
-  description = "Key pair name associated with the hub"
+  description = "EC2 key pair associated with the hub instance"
   type        = string
   default     = ""
 }
 variable "hub_disk_size" {
-  description = "The volume size used for the hub(s)"
+  description = "The volume size in GB used for the hub(s)"
   type        = number
   default     = 40
 }
@@ -252,12 +255,12 @@ variable "eda_image_id" {
   default     = ""
 }
 variable "eda_key_name" {
-  description = "Key pair name associated with the EDA node(s)"
+  description = "EC2 key pair associated with the EDA instance"
   type        = string
   default     = ""
 }
 variable "eda_disk_size" {
-  description = "The volume size used for the EDA node(s)"
+  description = "The volume size in GB used for the EDA node(s)"
   type        = number
   default     = 40
 }
@@ -299,12 +302,12 @@ variable "gateway_image_id" {
   default     = ""
 }
 variable "gateway_key_name" {
-  description = "Key pair name associated with the gateway"
+  description = "EC2 key pair associated with the gateway instance"
   type        = string
   default     = ""
 }
 variable "gateway_disk_size" {
-  description = "The volume size used for the gateway(s)"
+  description = "The volume size in GB used for the gateway(s)"
   type        = number
   default     = 40
 }
@@ -351,7 +354,12 @@ variable "rds_username" {
   default     = "postgres"
 }
 variable "rds_password" {
-  description = "Password for the root database user"
+  description = <<EOF
+    (Required) Password for the root database user
+
+    To prevent storing the password in plaintext in the terraform.tfvars file,
+    setting the TF_VAR_rds_password variable is recommended instead.
+  EOF
   type        = string
   default     = ""
   sensitive   = true

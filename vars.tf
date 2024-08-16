@@ -311,7 +311,7 @@ variable "gateway_disk_size" {
 variable "gateway_instance_name" {
   description = "The 'Name' tag applied to the gateway(s)"
   type        = string
-  default     = "gateway"
+  default     = "aap"
 }
 variable "gateway_ui_port" {
   description = "The gateway UI port"

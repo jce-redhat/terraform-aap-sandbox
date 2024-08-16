@@ -239,7 +239,7 @@ variable "hub_ui_port" {
 variable "eda_instance_count" {
   description = "The number of EDA instances to create"
   type        = number
-  default     = 1
+  default     = 0
 }
 variable "eda_instance_type" {
   description = "The instance type used for the EDA node(s)"

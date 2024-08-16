@@ -1,0 +1,9 @@
+# the default configuration will deploy one controller and one hub.  when
+# installing AAP, the database should be co-located on the controller
+
+# AWS Route53 hosted zone where AAP node records will be created
+aws_dns_zone = "sandbox123.example.com"
+
+# public SSH key content, used to create an EC2 key pair which is named
+# "aap-sandbox-key" by default
+aws_key_content = "Add PUBLIC key string here"

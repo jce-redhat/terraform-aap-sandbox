@@ -1,0 +1,8 @@
+# mandatory variables
+aws_dns_zone    = "sandbox123.example.com"
+aws_key_content = "Add PUBLIC key string here"
+
+# create a single instance for an all-in-one AAP installation.  this requires
+# using the containerized AAP installer as the traditional AAP installer does
+# not support multiple AAP components on the same server.
+deploy_single_node = true

@@ -29,7 +29,8 @@ cd terraform-aap-sandbox
 terraform init
 ```
 3. Create a terraform.tfvars file that set the variables appropriate to your deployment.  At a minimum
-   this file must contain the following variables (see [vars.tf](vars.tf)) for all available variables):
+   this file must contain the following variables (see [vars.tf](vars.tf)) for all available variables).
+   Example terraform.tfvars files can be found in the [tfvars-examples directory](tfvars-examples).
 ```
 aws_dns_zone    = "<your_route53_zone>"
 aws_key_content = "<your_public_key>"

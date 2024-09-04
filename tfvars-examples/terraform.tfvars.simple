@@ -1,5 +1,6 @@
-# the default configuration will deploy one controller and one hub.  when
-# installing AAP, the database should be co-located on the controller
+# the default configuration will deploy one instance for controller and
+# one instance for a hub.  when installing AAP, the database should be
+# co-located on the controller.
 
 # AWS Route53 hosted zone where AAP node records will be created
 aws_dns_zone = "sandbox123.example.com"

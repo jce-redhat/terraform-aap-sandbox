@@ -20,7 +20,7 @@ resource "aws_instance" "single_node" {
   vpc_security_group_ids = [
     aws_security_group.controller.id,
     aws_security_group.single_node.id,
-    aws_security_group.single_node_eips.id,
+    aws_security_group.single_node_eip[count.index].id,
     aws_security_group.default_egress.id
   ]
   root_block_device {

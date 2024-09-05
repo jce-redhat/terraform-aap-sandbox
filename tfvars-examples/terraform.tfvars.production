@@ -1,5 +1,5 @@
 # this is a production-like configuration which will deploy two instances for
-# controllers, one instane for a hub, one instance for an EDA controller, and
+# controllers, one instance for a hub, one instance for an EDA controller, and
 # an externally-managed RDS PostgreSQL database.
 
 # mandatory variables

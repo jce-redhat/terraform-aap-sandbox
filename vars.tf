@@ -131,8 +131,8 @@ variable "single_node_eda_port" {
   type        = string
   default     = "8445"
 }
-variable "single_node_gateway_port" {
-  description = "The port used by Gateway on single-node deployments"
+variable "single_node_gateway_proxy_port" {
+  description = "The port used by Gateway envoy proxy on single-node deployments"
   type        = string
   default     = "443"
 }

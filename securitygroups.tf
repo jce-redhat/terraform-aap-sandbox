@@ -154,9 +154,9 @@ resource "aws_security_group" "single_node" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    description = "Gateway UI on single node"
-    from_port   = var.single_node_gateway_port
-    to_port     = var.single_node_gateway_port
+    description = "Gateway UI proxy on single node"
+    from_port   = var.single_node_gateway_proxy_port
+    to_port     = var.single_node_gateway_proxy_port
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -164,27 +164,28 @@ resource "aws_security_group" "single_node" {
   tags = local.aws_tags
 }
 
-# single_node_eips security group created separately to avoid circular dependencies
-resource "aws_security_group" "single_node_eips" {
-  name        = "${var.aws_name_prefix}-single-node-eips"
-  description = "Ingress rules from single node EIPs"
+# separate security group definition from rules definitions to work around
+# lifecycle dependency issues
+resource "aws_security_group" "single_node_eip" {
+  count = var.deploy_single_node ? var.single_node_instance_count : 0
+
+  name        = "${var.aws_name_prefix}-single-node-${count.index}-eip"
+  description = "Single-node instance talking to itself"
   vpc_id      = module.vpc.vpc_id
 
   tags = local.aws_tags
 }
 
-# single_node_eips rules created separately to avoid circular dependencies
-resource "aws_security_group_rule" "single_node_eips" {
-  count = var.deploy_single_node ? var.single_node_instance_count : 0
-
+resource "aws_security_group_rule" "single_node_eip_all" {
+  count       = var.deploy_single_node ? var.single_node_instance_count : 0
   type        = "ingress"
-  description = "PostgreSQL from AAP EIPs"
-  from_port   = "5432"
-  to_port     = "5432"
-  protocol    = "tcp"
+  description = "Allow all ports from a single node EIP to itself"
+  from_port   = "0"
+  to_port     = "0"
+  protocol    = "-1"
   cidr_blocks = ["${aws_eip.single_node[count.index].public_ip}/32"]
 
-  security_group_id = aws_security_group.single_node_eips.id
+  security_group_id = aws_security_group.single_node_eip[count.index].id
 }
 
 resource "aws_security_group" "public_subnets" {

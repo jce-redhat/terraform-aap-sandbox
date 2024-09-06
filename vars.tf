@@ -38,6 +38,11 @@ variable "aws_key_content" {
   description = "(Required) SSH public key to use for the default EC2 key pair"
   type        = string
 }
+variable "aws_instance_type" {
+  description = "Default EC2 instance type for AAP nodes"
+  type        = string
+  default     = "t3a.large"
+}
 
 # deployment options
 variable "deploy_single_node" {
@@ -173,7 +178,7 @@ variable "controller_instance_count" {
 variable "controller_instance_type" {
   description = "The instance type used for the controller(s)"
   type        = string
-  default     = "t3a.large"
+  default     = ""
 }
 variable "controller_image_id" {
   description = "The AMI ID used for the controller(s)"
@@ -210,7 +215,7 @@ variable "hub_instance_count" {
 variable "hub_instance_type" {
   description = "The instance type used for the hub(s)"
   type        = string
-  default     = "t3a.large"
+  default     = ""
 }
 variable "hub_image_id" {
   description = "The AMI ID used for the hub(s)"
@@ -247,7 +252,7 @@ variable "eda_instance_count" {
 variable "eda_instance_type" {
   description = "The instance type used for the EDA node(s)"
   type        = string
-  default     = "t3a.large"
+  default     = ""
 }
 variable "eda_image_id" {
   description = "The AMI ID used for the EDA node(s)"
@@ -294,7 +299,7 @@ variable "gateway_instance_count" {
 variable "gateway_instance_type" {
   description = "The instance type used for the gateway(s)"
   type        = string
-  default     = "t3a.large"
+  default     = ""
 }
 variable "gateway_image_id" {
   description = "The AMI ID used for the gateway(s)"

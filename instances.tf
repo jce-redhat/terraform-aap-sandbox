@@ -46,7 +46,7 @@ resource "aws_eip" "single_node" {
 resource "aws_instance" "controller" {
   count = var.deploy_single_node ? 0 : var.controller_instance_count
 
-  instance_type = var.controller_instance_type
+  instance_type = var.controller_instance_type != "" ? var.controller_instance_type : var.aws_instance_type
   ami           = var.controller_image_id != "" ? var.controller_image_id : local.rhel_ami.id
   key_name      = var.controller_key_name != "" ? var.controller_key_name : var.aws_key_name
   subnet_id     = module.vpc.public_subnets.0
@@ -79,7 +79,7 @@ resource "aws_eip" "controller" {
 resource "aws_instance" "hub" {
   count = var.deploy_single_node ? 0 : var.hub_instance_count
 
-  instance_type = var.hub_instance_type
+  instance_type = var.hub_instance_type != "" ? var.hub_instance_type : var.aws_instance_type
   ami           = var.hub_image_id != "" ? var.hub_image_id : local.rhel_ami.id
   key_name      = var.hub_key_name != "" ? var.hub_key_name : var.aws_key_name
   subnet_id     = module.vpc.public_subnets.0
@@ -112,7 +112,7 @@ resource "aws_eip" "hub" {
 resource "aws_instance" "eda" {
   count = var.deploy_single_node ? 0 : var.eda_instance_count
 
-  instance_type = var.eda_instance_type
+  instance_type = var.eda_instance_type != "" ? var.eda_instance_type : var.aws_instance_type
   ami           = var.eda_image_id != "" ? var.eda_image_id : local.rhel_ami.id
   key_name      = var.eda_key_name != "" ? var.eda_key_name : var.aws_key_name
   subnet_id     = module.vpc.public_subnets.0
@@ -145,7 +145,7 @@ resource "aws_eip" "eda" {
 resource "aws_instance" "gateway" {
   count = var.deploy_single_node ? 0 : var.gateway_instance_count
 
-  instance_type = var.gateway_instance_type
+  instance_type = var.gateway_instance_type != "" ? var.gateway_instance_type : var.aws_instance_type
   ami           = var.gateway_image_id != "" ? var.gateway_image_id : local.rhel_ami.id
   key_name      = var.gateway_key_name != "" ? var.gateway_key_name : var.aws_key_name
   subnet_id     = module.vpc.public_subnets.0

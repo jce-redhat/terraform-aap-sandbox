@@ -164,6 +164,29 @@ resource "aws_security_group" "single_node" {
   tags = local.aws_tags
 }
 
+resource "aws_security_group" "execution" {
+  name        = "${var.aws_name_prefix}-execution"
+  description = "Execution node ingress rules"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "SSH"
+    from_port   = "22"
+    to_port     = "22"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "Automation mesh"
+    from_port   = "21799"
+    to_port     = "21799"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = local.aws_tags
+}
+
 # separate security group definition from rules definitions to work around
 # lifecycle dependency issues
 resource "aws_security_group" "single_node_eip" {

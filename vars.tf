@@ -327,6 +327,38 @@ variable "gateway_ui_port" {
   default     = "443"
 }
 
+# Execution node variables
+variable "execution_instance_count" {
+  description = "The number of execution node instances to create"
+  type        = number
+  default     = 0
+}
+variable "execution_instance_type" {
+  description = "The instance type used for the execution node(s)"
+  type        = string
+  default     = ""
+}
+variable "execution_image_id" {
+  description = "The AMI ID used for the execution node(s)"
+  type        = string
+  default     = ""
+}
+variable "execution_key_name" {
+  description = "EC2 key pair associated with the execution node(s)"
+  type        = string
+  default     = ""
+}
+variable "execution_disk_size" {
+  description = "The volume size in GB used for the execution node(s)"
+  type        = number
+  default     = 40
+}
+variable "execution_instance_name" {
+  description = "The 'Name' tag applied to the execution node(s)"
+  type        = string
+  default     = "en"
+}
+
 # RDS-related variables
 variable "rds_instance_type" {
   description = "RDS Instance type for database"

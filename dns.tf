@@ -82,6 +82,22 @@ resource "aws_route53_record" "gateway" {
   ]
 }
 
+resource "aws_route53_record" "execution" {
+  count = var.deploy_single_node ? 0 : var.execution_instance_count
+
+  zone_id = data.aws_route53_zone.aap_zone.zone_id
+  name = (var.execution_instance_count == 1 ? (
+    "${var.execution_instance_name}.${var.aws_dns_zone}"
+    ) : (
+    "${var.execution_instance_name}${count.index}.${var.aws_dns_zone}"
+  ))
+  type = "A"
+  ttl  = "300"
+  records = [
+    aws_eip.execution[count.index].public_ip
+  ]
+}
+
 resource "aws_route53_record" "bastion" {
   count = var.deploy_bastion ? 1 : 0
 

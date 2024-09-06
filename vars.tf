@@ -341,7 +341,7 @@ variable "rds_engine" {
 variable "rds_engine_version" {
   description = "RDS engine version"
   type        = string
-  default     = "13.13"
+  default     = "15.8"
 }
 variable "rds_multi_az" {
   description = "Create a multi-AZ RDS deployment"

@@ -11,7 +11,7 @@ resource "aws_db_parameter_group" "aap" {
   count = var.deploy_with_rds ? 1 : 0
 
   name   = "aap"
-  family = "postgres13"
+  family = var.rds_db_family
 
   parameter {
     name  = "log_connections"

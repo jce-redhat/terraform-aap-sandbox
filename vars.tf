@@ -161,7 +161,7 @@ variable "bastion_key_name" {
 variable "bastion_disk_size" {
   description = "The volume size in GB used for the bastion"
   type        = number
-  default     = 15
+  default     = 40
 }
 variable "bastion_instance_name" {
   description = "The 'Name' tag applied to the bastion"
@@ -374,6 +374,11 @@ variable "rds_engine" {
   description = "RDS engine"
   type        = string
   default     = "postgres"
+}
+variable "rds_db_family" {
+  description = "Database family for RDS DB family parameter"
+  type        = string
+  default     = "postgres15"
 }
 variable "rds_engine_version" {
   description = "RDS engine version"

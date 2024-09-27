@@ -189,26 +189,72 @@ resource "aws_security_group" "execution" {
 
 # separate security group definition from rules definitions to work around
 # lifecycle dependency issues
-resource "aws_security_group" "single_node_eip" {
-  count = var.deploy_single_node ? var.single_node_instance_count : 0
-
-  name        = "${var.aws_name_prefix}-single-node-${count.index}-eip"
-  description = "Single-node instance talking to itself"
+resource "aws_security_group" "aap_eips" {
+  name        = "${var.aws_name_prefix}-aap_eips"
+  description = "Communication between all AAP Elastic IPs"
   vpc_id      = module.vpc.vpc_id
 
   tags = local.aws_tags
 }
 
-resource "aws_security_group_rule" "single_node_eip_all" {
+resource "aws_security_group_rule" "single_node_eip" {
   count       = var.deploy_single_node ? var.single_node_instance_count : 0
   type        = "ingress"
-  description = "Allow all ports from a single node EIP to itself"
+  description = "Allow all ports from a single node EIP"
   from_port   = "0"
   to_port     = "0"
   protocol    = "-1"
   cidr_blocks = ["${aws_eip.single_node[count.index].public_ip}/32"]
 
-  security_group_id = aws_security_group.single_node_eip[count.index].id
+  security_group_id = aws_security_group.aap_eips.id
+}
+
+resource "aws_security_group_rule" "controller_eip" {
+  count       = var.deploy_single_node ? 0 : var.controller_instance_count
+  type        = "ingress"
+  description = "Allow all ports from a controller EIP"
+  from_port   = "0"
+  to_port     = "0"
+  protocol    = "-1"
+  cidr_blocks = ["${aws_eip.controller[count.index].public_ip}/32"]
+
+  security_group_id = aws_security_group.aap_eips.id
+}
+
+resource "aws_security_group_rule" "hub_eip" {
+  count       = var.deploy_single_node ? 0 : var.hub_instance_count
+  type        = "ingress"
+  description = "Allow all ports from a hub EIP"
+  from_port   = "0"
+  to_port     = "0"
+  protocol    = "-1"
+  cidr_blocks = ["${aws_eip.hub[count.index].public_ip}/32"]
+
+  security_group_id = aws_security_group.aap_eips.id
+}
+
+resource "aws_security_group_rule" "eda_eip" {
+  count       = var.deploy_single_node ? 0 : var.eda_instance_count
+  type        = "ingress"
+  description = "Allow all ports from a eda EIP"
+  from_port   = "0"
+  to_port     = "0"
+  protocol    = "-1"
+  cidr_blocks = ["${aws_eip.eda[count.index].public_ip}/32"]
+
+  security_group_id = aws_security_group.aap_eips.id
+}
+
+resource "aws_security_group_rule" "gateway_eip" {
+  count       = var.deploy_single_node ? 0 : var.gateway_instance_count
+  type        = "ingress"
+  description = "Allow all ports from a gateway EIP"
+  from_port   = "0"
+  to_port     = "0"
+  protocol    = "-1"
+  cidr_blocks = ["${aws_eip.gateway[count.index].public_ip}/32"]
+
+  security_group_id = aws_security_group.aap_eips.id
 }
 
 resource "aws_security_group" "public_subnets" {

@@ -20,7 +20,7 @@ resource "aws_instance" "single_node" {
   vpc_security_group_ids = [
     aws_security_group.controller.id,
     aws_security_group.single_node.id,
-    aws_security_group.single_node_eip[count.index].id,
+    aws_security_group.aap_eips.id,
     aws_security_group.default_egress.id
   ]
   root_block_device {
@@ -53,6 +53,7 @@ resource "aws_instance" "controller" {
 
   vpc_security_group_ids = [
     aws_security_group.controller.id,
+    aws_security_group.aap_eips.id,
     aws_security_group.public_subnets.id,
     aws_security_group.default_egress.id
   ]
@@ -86,6 +87,7 @@ resource "aws_instance" "hub" {
 
   vpc_security_group_ids = [
     aws_security_group.hub.id,
+    aws_security_group.aap_eips.id,
     aws_security_group.public_subnets.id,
     aws_security_group.default_egress.id
   ]
@@ -119,6 +121,7 @@ resource "aws_instance" "eda" {
 
   vpc_security_group_ids = [
     aws_security_group.eda.id,
+    aws_security_group.aap_eips.id,
     aws_security_group.public_subnets.id,
     aws_security_group.default_egress.id
   ]
@@ -152,6 +155,7 @@ resource "aws_instance" "gateway" {
 
   vpc_security_group_ids = [
     aws_security_group.gateway.id,
+    aws_security_group.aap_eips.id,
     aws_security_group.public_subnets.id,
     aws_security_group.default_egress.id
   ]

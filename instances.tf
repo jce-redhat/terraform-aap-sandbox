@@ -172,6 +172,39 @@ resource "aws_instance" "gateway" {
   )
 }
 
+resource "aws_instance" "database" {
+  count = var.deploy_single_node ? 0 : var.database_instance_count
+
+  instance_type = var.database_instance_type != "" ? var.database_instance_type : var.aws_instance_type
+  ami           = var.database_image_id != "" ? var.database_image_id : local.rhel_ami.id
+  key_name      = var.database_key_name != "" ? var.database_key_name : var.aws_key_name
+  subnet_id     = module.vpc.public_subnets.0
+
+  vpc_security_group_ids = [
+    aws_security_group.aap_eips.id,
+    aws_security_group.public_subnets.id,
+    aws_security_group.default_egress.id
+  ]
+  root_block_device {
+    volume_size = var.database_disk_size
+  }
+
+  associate_public_ip_address = true
+
+  tags = merge(local.aws_tags,
+    {
+      Name = "${var.database_instance_name}${count.index}"
+    }
+  )
+}
+
+resource "aws_eip" "database" {
+  count = var.deploy_single_node ? 0 : var.database_instance_count
+
+  instance = aws_instance.database[count.index].id
+  domain   = "vpc"
+}
+
 resource "aws_eip" "gateway" {
   count = var.deploy_single_node ? 0 : var.gateway_instance_count
 

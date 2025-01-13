@@ -35,8 +35,8 @@ resource "aws_security_group" "controller" {
   }
   ingress {
     description = "Automation mesh"
-    from_port   = "21799"
-    to_port     = "21799"
+    from_port   = "27199"
+    to_port     = "27199"
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -178,8 +178,8 @@ resource "aws_security_group" "execution" {
   }
   ingress {
     description = "Automation mesh"
-    from_port   = "21799"
-    to_port     = "21799"
+    from_port   = "27199"
+    to_port     = "27199"
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -212,7 +212,7 @@ resource "aws_security_group_rule" "single_node_eip" {
 resource "aws_security_group_rule" "controller_eip" {
   count       = var.deploy_single_node ? 0 : var.controller_instance_count
   type        = "ingress"
-  description = "Allow all ports from a controller EIP"
+  description = "Allow all ports from a controller node EIP"
   from_port   = "0"
   to_port     = "0"
   protocol    = "-1"
@@ -224,7 +224,7 @@ resource "aws_security_group_rule" "controller_eip" {
 resource "aws_security_group_rule" "hub_eip" {
   count       = var.deploy_single_node ? 0 : var.hub_instance_count
   type        = "ingress"
-  description = "Allow all ports from a hub EIP"
+  description = "Allow all ports from a hub node EIP"
   from_port   = "0"
   to_port     = "0"
   protocol    = "-1"
@@ -236,7 +236,7 @@ resource "aws_security_group_rule" "hub_eip" {
 resource "aws_security_group_rule" "eda_eip" {
   count       = var.deploy_single_node ? 0 : var.eda_instance_count
   type        = "ingress"
-  description = "Allow all ports from a eda EIP"
+  description = "Allow all ports from an EDA node EIP"
   from_port   = "0"
   to_port     = "0"
   protocol    = "-1"
@@ -248,11 +248,35 @@ resource "aws_security_group_rule" "eda_eip" {
 resource "aws_security_group_rule" "gateway_eip" {
   count       = var.deploy_single_node ? 0 : var.gateway_instance_count
   type        = "ingress"
-  description = "Allow all ports from a gateway EIP"
+  description = "Allow all ports from a gateway node EIP"
   from_port   = "0"
   to_port     = "0"
   protocol    = "-1"
   cidr_blocks = ["${aws_eip.gateway[count.index].public_ip}/32"]
+
+  security_group_id = aws_security_group.aap_eips.id
+}
+
+resource "aws_security_group_rule" "database_eip" {
+  count       = var.deploy_single_node ? 0 : var.database_instance_count
+  type        = "ingress"
+  description = "Allow all ports from a database node EIP"
+  from_port   = "0"
+  to_port     = "0"
+  protocol    = "-1"
+  cidr_blocks = ["${aws_eip.database[count.index].public_ip}/32"]
+
+  security_group_id = aws_security_group.aap_eips.id
+}
+
+resource "aws_security_group_rule" "execution_eip" {
+  count       = var.deploy_single_node ? 0 : var.execution_instance_count
+  type        = "ingress"
+  description = "Allow all ports from an execution node EIP"
+  from_port   = "0"
+  to_port     = "0"
+  protocol    = "-1"
+  cidr_blocks = ["${aws_eip.execution[count.index].public_ip}/32"]
 
   security_group_id = aws_security_group.aap_eips.id
 }

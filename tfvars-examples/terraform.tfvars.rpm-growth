@@ -1,0 +1,17 @@
+# create a single instance for the AAP RPM growth topology, see
+# https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/tested_deployment_models/index
+#
+# this will create six instances:
+# - 1 gateway node
+# - 1 controller node
+# - 1 hub node
+# - 1 EDA node
+# - 1 execution node
+# - 1 database node
+
+# mandatory variables
+aws_dns_zone    = "sandbox123.example.com"
+aws_key_content = "Add PUBLIC key string here"
+
+# topology variables
+deploy_database_node = true

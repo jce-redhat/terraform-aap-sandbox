@@ -46,7 +46,12 @@ variable "aws_instance_type" {
 
 # deployment options
 variable "deploy_single_node" {
-  description = "Deploy a single-node for containerized AAP"
+  description = "Deploy a single node for containerized AAP"
+  type        = bool
+  default     = false
+}
+variable "deploy_database_node" {
+  description = "Deploy a database node"
   type        = bool
   default     = false
 }
@@ -56,7 +61,7 @@ variable "deploy_with_rds" {
   default     = false
 }
 variable "deploy_bastion" {
-  description = "Deploy an instance to use as a bastion host"
+  description = "Deploy an instance to use as a bastion or installation host"
   type        = bool
   default     = false
 }
@@ -114,7 +119,7 @@ variable "single_node_key_name" {
 variable "single_node_disk_size" {
   description = "The volume size in GB used for the single-node instance"
   type        = number
-  default     = 40
+  default     = 60
 }
 variable "single_node_instance_name" {
   description = "The 'Name' tag applied to the single-node instance"
@@ -193,7 +198,7 @@ variable "controller_key_name" {
 variable "controller_disk_size" {
   description = "The volume size in GB used for the controller(s)"
   type        = number
-  default     = 40
+  default     = 60
 }
 variable "controller_instance_name" {
   description = "The 'Name' tag applied to the controller(s)"
@@ -230,7 +235,7 @@ variable "hub_key_name" {
 variable "hub_disk_size" {
   description = "The volume size in GB used for the hub(s)"
   type        = number
-  default     = 40
+  default     = 60
 }
 variable "hub_instance_name" {
   description = "The 'Name' tag applied to the hub(s)"
@@ -247,7 +252,7 @@ variable "hub_ui_port" {
 variable "eda_instance_count" {
   description = "The number of EDA instances to create"
   type        = number
-  default     = 0
+  default     = 1
 }
 variable "eda_instance_type" {
   description = "The instance type used for the EDA node(s)"
@@ -267,7 +272,7 @@ variable "eda_key_name" {
 variable "eda_disk_size" {
   description = "The volume size in GB used for the EDA node(s)"
   type        = number
-  default     = 40
+  default     = 60
 }
 variable "eda_instance_name" {
   description = "The 'Name' tag applied to the EDA node(s)"
@@ -294,7 +299,7 @@ variable "eda_ui_port" {
 variable "gateway_instance_count" {
   description = "The number of gateway instances to create"
   type        = number
-  default     = 0
+  default     = 1
 }
 variable "gateway_instance_type" {
   description = "The instance type used for the gateway(s)"
@@ -314,7 +319,7 @@ variable "gateway_key_name" {
 variable "gateway_disk_size" {
   description = "The volume size in GB used for the gateway(s)"
   type        = number
-  default     = 40
+  default     = 60
 }
 variable "gateway_instance_name" {
   description = "The 'Name' tag applied to the gateway(s)"
@@ -327,11 +332,46 @@ variable "gateway_ui_port" {
   default     = "443"
 }
 
+# Database node variables
+# TODO is this needed or can we hardcode it?  based on topologies
+# this should only be needed for RPM growth and there would only
+# be one
+variable "database_instance_count" {
+  description = "The number of database node instances to create"
+  type        = number
+  default     = 1
+}
+variable "database_instance_type" {
+  description = "The instance type used for the database node"
+  type        = string
+  default     = ""
+}
+variable "database_image_id" {
+  description = "The AMI ID used for the database node"
+  type        = string
+  default     = ""
+}
+variable "database_key_name" {
+  description = "EC2 key pair associated with the database node"
+  type        = string
+  default     = ""
+}
+variable "database_disk_size" {
+  description = "The volume size in GB used for the database node"
+  type        = number
+  default     = 60
+}
+variable "database_instance_name" {
+  description = "The 'Name' tag applied to the database node"
+  type        = string
+  default     = "db"
+}
+
 # Execution node variables
 variable "execution_instance_count" {
   description = "The number of execution node instances to create"
   type        = number
-  default     = 0
+  default     = 1
 }
 variable "execution_instance_type" {
   description = "The instance type used for the execution node(s)"
@@ -351,7 +391,7 @@ variable "execution_key_name" {
 variable "execution_disk_size" {
   description = "The volume size in GB used for the execution node(s)"
   type        = number
-  default     = 40
+  default     = 60
 }
 variable "execution_instance_name" {
   description = "The 'Name' tag applied to the execution node(s)"

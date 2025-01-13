@@ -22,6 +22,10 @@ output "gateway_public_fqdn" {
   description = "Public FQDN of the AAP gateway instance(s)"
   value       = length(aws_instance.gateway) > 0 ? aws_route53_record.gateway.*.name : null
 }
+output "database_public_fqdn" {
+  description = "Public FQDN of the AAP database instance"
+  value       = length(aws_instance.database) > 0 ? aws_route53_record.database.*.name : null
+}
 output "execution_public_fqdn" {
   description = "Public FQDN of the AAP execution node instance(s)"
   value       = length(aws_instance.execution) > 0 ? aws_route53_record.execution.*.name : null

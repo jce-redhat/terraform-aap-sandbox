@@ -1,9 +1,0 @@
-# create a single instance for an all-in-one aap installation.  this requires
-# using the containerized aap installer as the traditional aap installer does
-# not support multiple aap components on the same server.
-
-# mandatory variables
-aws_dns_zone    = "sandbox123.example.com"
-aws_key_content = "Add PUBLIC key string here"
-
-deploy_single_node = true

@@ -1,0 +1,11 @@
+# variables for deploying AAP container growth topology, see
+# https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/tested_deployment_models/index
+#
+# this configuration will creat a single instance for an all-in-one containerized deployment
+
+# mandatory variables
+aws_dns_zone    = "sandbox123.example.com"
+aws_key_content = "Add PUBLIC key string here"
+
+# topology variables
+deploy_single_node = true

@@ -1,0 +1,25 @@
+# create instances for the AAP container enterprise topology, see
+# https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/tested_deployment_models/index
+#
+# this will create ten instances:
+# - 2 gateway nodes
+# - 2 controller nodes
+# - 2 hub nodes
+# - 2 EDA nodes
+# - 2 execution node
+#
+# a external RDS postgres instance is also created
+
+# mandatory variables
+aws_dns_zone    = "sandbox123.example.com"
+aws_key_content = "Add PUBLIC key string here"
+
+# topology variables
+deploy_with_rds = true
+
+# increase default number of instances
+gateway_instance_count    = 2
+controller_instance_count = 2
+hub_instance_count        = 2
+eda_instance_count        = 2
+execution_instance_count  = 2

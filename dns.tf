@@ -83,7 +83,7 @@ resource "aws_route53_record" "gateway" {
 }
 
 resource "aws_route53_record" "database" {
-  count = var.deploy_single_node ? 0 : var.database_instance_count
+  count = var.deploy_database_node ? var.database_instance_count : 0
 
   zone_id = data.aws_route53_zone.aap_zone.zone_id
   name = (var.database_instance_count == 1 ? (

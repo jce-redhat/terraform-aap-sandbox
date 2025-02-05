@@ -197,6 +197,18 @@ resource "aws_security_group" "aap_eips" {
   tags = local.aws_tags
 }
 
+resource "aws_security_group_rule" "bastion_eip" {
+  count       = var.deploy_bastion ? 1 : 0
+  type        = "ingress"
+  description = "Allow all ports from an bastion node EIP"
+  from_port   = "0"
+  to_port     = "0"
+  protocol    = "-1"
+  cidr_blocks = ["${aws_eip.bastion[count.index].public_ip}/32"]
+
+  security_group_id = aws_security_group.aap_eips.id
+}
+
 resource "aws_security_group_rule" "single_node_eip" {
   count       = var.deploy_single_node ? var.single_node_instance_count : 0
   type        = "ingress"

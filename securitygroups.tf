@@ -160,6 +160,13 @@ resource "aws_security_group" "single_node" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+    description = "Automation mesh"
+    from_port   = "27199"
+    to_port     = "27199"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   tags = local.aws_tags
 }

@@ -12,10 +12,11 @@ resource "aws_key_pair" "sandbox_key" {
 resource "aws_instance" "single_node" {
   count = var.deploy_single_node ? var.single_node_instance_count : 0
 
-  instance_type = var.single_node_instance_type
-  ami           = var.single_node_image_id != "" ? var.single_node_image_id : local.rhel_ami.id
-  key_name      = var.single_node_key_name != "" ? var.single_node_key_name : var.aws_key_name
-  subnet_id     = module.vpc.public_subnets.0
+  instance_type        = var.single_node_instance_type
+  ami                  = var.single_node_image_id != "" ? var.single_node_image_id : local.rhel_ami.id
+  key_name             = var.single_node_key_name != "" ? var.single_node_key_name : var.aws_key_name
+  subnet_id            = module.vpc.public_subnets.0
+  iam_instance_profile = aws_iam_instance_profile.aap_instance_profile.name
 
   vpc_security_group_ids = [
     aws_security_group.controller.id,
@@ -46,10 +47,11 @@ resource "aws_eip" "single_node" {
 resource "aws_instance" "controller" {
   count = var.deploy_single_node ? 0 : var.controller_instance_count
 
-  instance_type = var.controller_instance_type != "" ? var.controller_instance_type : var.aws_instance_type
-  ami           = var.controller_image_id != "" ? var.controller_image_id : local.rhel_ami.id
-  key_name      = var.controller_key_name != "" ? var.controller_key_name : var.aws_key_name
-  subnet_id     = module.vpc.public_subnets.0
+  instance_type        = var.controller_instance_type != "" ? var.controller_instance_type : var.aws_instance_type
+  ami                  = var.controller_image_id != "" ? var.controller_image_id : local.rhel_ami.id
+  key_name             = var.controller_key_name != "" ? var.controller_key_name : var.aws_key_name
+  subnet_id            = module.vpc.public_subnets.0
+  iam_instance_profile = aws_iam_instance_profile.aap_instance_profile.name
 
   vpc_security_group_ids = [
     aws_security_group.controller.id,
@@ -215,10 +217,11 @@ resource "aws_eip" "gateway" {
 resource "aws_instance" "execution" {
   count = var.deploy_single_node ? 0 : var.execution_instance_count
 
-  instance_type = var.execution_instance_type != "" ? var.execution_instance_type : var.aws_instance_type
-  ami           = var.execution_image_id != "" ? var.execution_image_id : local.rhel_ami.id
-  key_name      = var.execution_key_name != "" ? var.execution_key_name : var.aws_key_name
-  subnet_id     = module.vpc.public_subnets.0
+  instance_type        = var.execution_instance_type != "" ? var.execution_instance_type : var.aws_instance_type
+  ami                  = var.execution_image_id != "" ? var.execution_image_id : local.rhel_ami.id
+  key_name             = var.execution_key_name != "" ? var.execution_key_name : var.aws_key_name
+  subnet_id            = module.vpc.public_subnets.0
+  iam_instance_profile = aws_iam_instance_profile.aap_instance_profile.name
 
   vpc_security_group_ids = [
     aws_security_group.execution.id,

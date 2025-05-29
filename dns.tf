@@ -125,3 +125,15 @@ resource "aws_route53_record" "bastion" {
     aws_eip.bastion[count.index].public_ip
   ]
 }
+
+resource "aws_route53_record" "dashboard" {
+  count = var.deploy_dashboard ? 1 : 0
+
+  zone_id = data.aws_route53_zone.aap_zone.zone_id
+  name    = "dashboard.${var.aws_dns_zone}"
+  type    = "A"
+  ttl     = "300"
+  records = [
+    aws_eip.dashboard[count.index].public_ip
+  ]
+}

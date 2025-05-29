@@ -34,6 +34,10 @@ output "bastion_public_fqdn" {
   description = "Public FQDN of the AAP bastion"
   value       = length(aws_instance.bastion) > 0 ? aws_route53_record.bastion[0].name : null
 }
+output "dashboard_public_fqdn" {
+  description = "Public FQDN of the AAP Automation Dashboard"
+  value       = length(aws_instance.dashboard) > 0 ? aws_route53_record.dashboard[0].name : null
+}
 
 output "rds_hostname" {
   description = "RDS instance hostname"

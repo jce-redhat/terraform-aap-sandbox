@@ -280,3 +280,37 @@ resource "aws_eip" "bastion" {
   instance = aws_instance.bastion[count.index].id
   domain   = "vpc"
 }
+
+resource "aws_instance" "dashboard" {
+  count = var.deploy_dashboard ? 1 : 0
+
+  instance_type = var.dashboard_instance_type != "" ? var.dashboard_instance_type : var.aws_instance_type
+  ami           = var.dashboard_image_id != "" ? var.dashboard_image_id : local.rhel_ami.id
+  key_name      = var.dashboard_key_name != "" ? var.dashboard_key_name : var.aws_key_name
+  subnet_id     = module.vpc.public_subnets.0
+
+  vpc_security_group_ids = [
+    aws_security_group.dashboard.id,
+    aws_security_group.aap_eips.id,
+    aws_security_group.public_subnets.id,
+    aws_security_group.default_egress.id
+  ]
+  root_block_device {
+    volume_size = var.dashboard_disk_size
+  }
+
+  associate_public_ip_address = true
+
+  tags = merge(local.aws_tags,
+    {
+      Name = var.dashboard_instance_name
+    }
+  )
+}
+
+resource "aws_eip" "dashboard" {
+  count = var.deploy_dashboard ? 1 : 0
+
+  instance = aws_instance.dashboard[count.index].id
+  domain   = "vpc"
+}

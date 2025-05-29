@@ -194,6 +194,29 @@ resource "aws_security_group" "execution" {
   tags = local.aws_tags
 }
 
+resource "aws_security_group" "dashboard" {
+  name        = "${var.aws_name_prefix}-dashboard"
+  description = "Dashboard node ingress rules"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "SSH"
+    from_port   = "22"
+    to_port     = "22"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "Dashboard UI over HTTPS"
+    from_port   = var.dashboard_ui_port
+    to_port     = var.dashboard_ui_port
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = local.aws_tags
+}
+
 # separate security group definition from rules definitions to work around
 # lifecycle dependency issues
 resource "aws_security_group" "aap_eips" {
@@ -296,6 +319,18 @@ resource "aws_security_group_rule" "execution_eip" {
   to_port     = "0"
   protocol    = "-1"
   cidr_blocks = ["${aws_eip.execution[count.index].public_ip}/32"]
+
+  security_group_id = aws_security_group.aap_eips.id
+}
+
+resource "aws_security_group_rule" "dashboard_eip" {
+  count       = var.deploy_dashboard ? 1 : 0
+  type        = "ingress"
+  description = "Allow all ports from a dashboard node EIP"
+  from_port   = "0"
+  to_port     = "0"
+  protocol    = "-1"
+  cidr_blocks = ["${aws_eip.dashboard[count.index].public_ip}/32"]
 
   security_group_id = aws_security_group.aap_eips.id
 }

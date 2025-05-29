@@ -65,6 +65,11 @@ variable "deploy_bastion" {
   type        = bool
   default     = false
 }
+variable "deploy_dashboard" {
+  description = "Deploy an instance to use as the automation dashboard host"
+  type        = bool
+  default     = false
+}
 variable "deploy_with_rhel8" {
   description = "Deploy with RHEL 8 AMIs (otherwise use RHEL 9)"
   type        = bool
@@ -445,4 +450,36 @@ variable "rds_password" {
   type        = string
   default     = ""
   sensitive   = true
+}
+
+# Automation dashboard node variables
+variable "dashboard_instance_type" {
+  description = "The instance type used for the dashboard node"
+  type        = string
+  default     = ""
+}
+variable "dashboard_image_id" {
+  description = "The AMI ID used for the dashboard node(s)"
+  type        = string
+  default     = ""
+}
+variable "dashboard_key_name" {
+  description = "EC2 key pair associated with the dashboard node(s)"
+  type        = string
+  default     = ""
+}
+variable "dashboard_disk_size" {
+  description = "The volume size in GB used for the dashboard node(s)"
+  type        = number
+  default     = 60
+}
+variable "dashboard_instance_name" {
+  description = "The 'Name' tag applied to the dashboard node(s)"
+  type        = string
+  default     = "en"
+}
+variable "dashboard_ui_port" {
+  description = "The dashboard UI port"
+  type        = string
+  default     = "8447"
 }

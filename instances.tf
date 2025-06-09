@@ -16,7 +16,7 @@ resource "aws_instance" "single_node" {
   ami                  = var.single_node_image_id != "" ? var.single_node_image_id : local.rhel_ami.id
   key_name             = var.single_node_key_name != "" ? var.single_node_key_name : var.aws_key_name
   subnet_id            = module.vpc.public_subnets.0
-  iam_instance_profile = aws_iam_instance_profile.aap_instance_profile.name
+  iam_instance_profile = var.create_instance_profile ? aws_iam_instance_profile.aap_instance_profile[0].name : null
 
   vpc_security_group_ids = [
     aws_security_group.controller.id,
@@ -51,7 +51,7 @@ resource "aws_instance" "controller" {
   ami                  = var.controller_image_id != "" ? var.controller_image_id : local.rhel_ami.id
   key_name             = var.controller_key_name != "" ? var.controller_key_name : var.aws_key_name
   subnet_id            = module.vpc.public_subnets.0
-  iam_instance_profile = aws_iam_instance_profile.aap_instance_profile.name
+  iam_instance_profile = var.create_instance_profile ? aws_iam_instance_profile.aap_instance_profile[0].name : null
 
   vpc_security_group_ids = [
     aws_security_group.controller.id,
@@ -221,7 +221,7 @@ resource "aws_instance" "execution" {
   ami                  = var.execution_image_id != "" ? var.execution_image_id : local.rhel_ami.id
   key_name             = var.execution_key_name != "" ? var.execution_key_name : var.aws_key_name
   subnet_id            = module.vpc.public_subnets.0
-  iam_instance_profile = aws_iam_instance_profile.aap_instance_profile.name
+  iam_instance_profile = var.create_instance_profile ? aws_iam_instance_profile.aap_instance_profile[0].name : null
 
   vpc_security_group_ids = [
     aws_security_group.execution.id,

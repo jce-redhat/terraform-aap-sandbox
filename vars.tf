@@ -75,6 +75,11 @@ variable "deploy_with_rhel8" {
   type        = bool
   default     = false
 }
+variable "create_instance_profile" {
+  description = "Create a instance profile with an EC2 read-only role attached"
+  type        = bool
+  default     = false
+}
 
 # AMI-related variables
 variable "rhel9_ami_name" {

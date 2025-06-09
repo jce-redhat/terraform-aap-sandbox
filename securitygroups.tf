@@ -213,6 +213,20 @@ resource "aws_security_group" "dashboard" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+    description = "TEST RHBK HTTPS port"
+    from_port   = "8443"
+    to_port     = "8443"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "TEST RHBK jgroups port"
+    from_port   = "7800"
+    to_port     = "7800"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   tags = local.aws_tags
 }

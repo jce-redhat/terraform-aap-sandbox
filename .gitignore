@@ -14,3 +14,6 @@ terraform.rc
 #
 # https://developer.hashicorp.com/terraform/language/files/dependency-lock
 .terraform.lock.hcl
+
+# temp files
+tmp/

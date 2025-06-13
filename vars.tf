@@ -481,7 +481,7 @@ variable "dashboard_disk_size" {
 variable "dashboard_instance_name" {
   description = "The 'Name' tag applied to the dashboard node(s)"
   type        = string
-  default     = "en"
+  default     = "dashboard"
 }
 variable "dashboard_ui_port" {
   description = "The dashboard UI port"

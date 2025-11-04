@@ -60,6 +60,11 @@ variable "deploy_with_rds" {
   type        = bool
   default     = false
 }
+variable "deploy_with_nlb" {
+  description = "Deploy an Elastic Load Balancer in network mode"
+  type        = bool
+  default     = false
+}
 variable "deploy_bastion" {
   description = "Deploy an instance to use as a bastion or installation host"
   type        = bool
@@ -215,6 +220,7 @@ variable "controller_instance_name" {
   type        = string
   default     = "controller"
 }
+# TODO remove if not used
 variable "controller_ui_port" {
   description = "The Controller UI port"
   type        = string
@@ -252,6 +258,7 @@ variable "hub_instance_name" {
   type        = string
   default     = "hub"
 }
+# TODO remove if not used
 variable "hub_ui_port" {
   description = "The Hub UI port"
   type        = string
@@ -299,6 +306,7 @@ variable "eda_webhook_port_end" {
   type        = string
   default     = "5010"
 }
+# TODO remove if not used
 variable "eda_ui_port" {
   description = "The EDA UI port"
   type        = string
@@ -340,6 +348,13 @@ variable "gateway_ui_port" {
   description = "The gateway UI port"
   type        = string
   default     = "443"
+}
+
+# Gateway LB variables
+variable "gateway_lb_name" {
+  description = "The gateway LB name (used as the hostname)"
+  type        = string
+  default     = "aap"
 }
 
 # Database node variables

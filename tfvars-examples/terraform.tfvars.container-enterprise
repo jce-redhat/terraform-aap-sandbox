@@ -8,7 +8,9 @@
 # - 2 EDA nodes
 # - 2 execution node
 #
-# a external RDS postgres instance is also created
+# also created:
+# - a external RDS postgres instance
+# - an elastic load balancer in network mode for SSL passthrough
 
 # mandatory variables
 aws_dns_zone    = "sandbox123.example.com"
@@ -16,6 +18,7 @@ aws_key_content = "Add PUBLIC key string here"
 
 # topology variables
 deploy_with_rds = true
+deploy_with_nlb = true
 
 # increase default number of instances
 gateway_instance_count    = 2

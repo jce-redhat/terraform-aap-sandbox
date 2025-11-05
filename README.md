@@ -9,8 +9,8 @@ in an AWS VPC.  Deployment options include:
 
 ## Prerequisites
 
-1. AWS access and secret keys with sufficient priviliges to create EC2 components (VPC networking,
-   instances, security groups, key pairs) and Route53 DNS records.
+1. AWS access and secret keys with sufficient priviliges to create resources in various AWS
+   services: EC2 (VPC, instances, security groups, key pairs, load balancers), Route53, and RDS.
 2. An existing AWS Route53 hosted zone where records will be created.
 3. A pre-existing SSH key pair.  An AWS key pair entry will be created using the existing public key.
 4. The terraform binary (see [Install Terraform](https://developer.hashicorp.com/terraform/install)).

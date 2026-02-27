@@ -30,6 +30,10 @@ resource "aws_instance" "single_node" {
 
   associate_public_ip_address = true
 
+  metadata_options {
+    http_tokens = "required"
+  }
+
   tags = merge(local.aws_tags,
     {
       Name = "${var.single_node_instance_name}${count.index}"
@@ -65,6 +69,10 @@ resource "aws_instance" "controller" {
 
   associate_public_ip_address = true
 
+  metadata_options {
+    http_tokens = "required"
+  }
+
   tags = merge(local.aws_tags,
     {
       Name = "${var.controller_instance_name}${count.index}"
@@ -98,6 +106,10 @@ resource "aws_instance" "hub" {
   }
 
   associate_public_ip_address = true
+
+  metadata_options {
+    http_tokens = "required"
+  }
 
   tags = merge(local.aws_tags,
     {
@@ -133,6 +145,10 @@ resource "aws_instance" "eda" {
 
   associate_public_ip_address = true
 
+  metadata_options {
+    http_tokens = "required"
+  }
+
   tags = merge(local.aws_tags,
     {
       Name = "${var.eda_instance_name}${count.index}"
@@ -167,6 +183,10 @@ resource "aws_instance" "gateway" {
 
   associate_public_ip_address = true
 
+  metadata_options {
+    http_tokens = "required"
+  }
+
   tags = merge(local.aws_tags,
     {
       Name = "${var.gateway_instance_name}${count.index}"
@@ -192,6 +212,10 @@ resource "aws_instance" "database" {
   }
 
   associate_public_ip_address = true
+
+  metadata_options {
+    http_tokens = "required"
+  }
 
   tags = merge(local.aws_tags,
     {
@@ -234,6 +258,10 @@ resource "aws_instance" "execution" {
 
   associate_public_ip_address = true
 
+  metadata_options {
+    http_tokens = "required"
+  }
+
   tags = merge(local.aws_tags,
     {
       Name = "${var.execution_instance_name}${count.index}"
@@ -266,6 +294,10 @@ resource "aws_instance" "bastion" {
   }
 
   associate_public_ip_address = true
+
+  metadata_options {
+    http_tokens = "required"
+  }
 
   tags = merge(local.aws_tags,
     {
@@ -300,6 +332,10 @@ resource "aws_instance" "dashboard" {
   }
 
   associate_public_ip_address = true
+
+  metadata_options {
+    http_tokens = "required"
+  }
 
   tags = merge(local.aws_tags,
     {

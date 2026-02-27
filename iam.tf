@@ -1,3 +1,6 @@
+# create an instance profile with read-only access to EC2.  this is useful
+# in environments where access is granted with short-lived STS tokens, which
+# make using AWS credentials for dynamic inventory syncs less useful.
 data "aws_iam_policy_document" "assume_aap_instance_role" {
   statement {
     effect = "Allow"

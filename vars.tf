@@ -2,7 +2,7 @@
 variable "aws_region" {
   description = "AWS region where resources are created"
   type        = string
-  default     = "us-west-2"
+  default     = "us-east-2"
 }
 variable "aws_num_azs" {
   description = "Number of availability zones to use for VPC subnets"
@@ -41,7 +41,7 @@ variable "aws_key_content" {
 variable "aws_instance_type" {
   description = "Default EC2 instance type for AAP nodes"
   type        = string
-  default     = "t3a.large"
+  default     = "t3a.xlarge"
 }
 
 # deployment options
@@ -448,7 +448,7 @@ variable "rds_db_family" {
 variable "rds_engine_version" {
   description = "RDS engine version"
   type        = string
-  default     = "15.8"
+  default     = "15.16"
 }
 variable "rds_multi_az" {
   description = "Create a multi-AZ RDS deployment"

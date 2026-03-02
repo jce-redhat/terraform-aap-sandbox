@@ -47,7 +47,7 @@ resource "aws_db_instance" "aap" {
     }
     # TODO this doesn't work to make deploy_database_node and deploy_with_rds
     # mutually exclusive for some reason, need to find another way
-    #precondition {
+    # precondition {
     #  condition     = alltrue([var.deploy_database_node, var.deploy_with_rds])
     #  error_message = "The 'deploy_database_node' and 'deploy_with_rds' variables are mutually exclusive, only one can be set to 'true'"
     #}

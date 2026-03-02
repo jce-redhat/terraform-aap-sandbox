@@ -1,4 +1,4 @@
-# terraform-aap-sandbox - Build AWS infrastructure for Ansible Automation Platform demos
+# Build AWS infrastructure for Ansible Automation Platform demos
 
 Terraform configuration for building Ansible Automation Platform (AAP) infrastructure
 in an AWS VPC.  Deployment options include:
@@ -14,6 +14,8 @@ in an AWS VPC.  Deployment options include:
 2. An existing AWS Route53 hosted zone where records will be created.
 3. A pre-existing SSH key pair.  An AWS key pair entry will be created using the existing public key.
 4. The terraform binary (see [Install Terraform](https://developer.hashicorp.com/terraform/install)).
+
+**NOTE:** When deploying the enterprise topology on RHDPS Open Environment, ensure you request an Elastic IP quota increase. This is 5 by default 15 is safe to account for the entire server deployment and ALB.
 
 For Red Hatters, an open environment can be created on demo.redhat.com to fulfill the first two requirements.
 
@@ -39,8 +41,10 @@ aws_key_content = "<your_public_key>"
 ```
 export AWS_ACCESS_KEY_ID=<your_access_key>
 export AWS_SECRET_ACCESS_KEY=<your_secret_key>
+export TF_VAR_rds_password=<rds_password>
 ```
-5. Run terraform to create the AWS resources.
+5. Increase `15` IP addresses through the account quota allotment (this can take some time)
+6. Run terraform to create the AWS resources.
 ```
 terraform apply
 ```

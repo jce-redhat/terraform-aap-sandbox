@@ -18,3 +18,7 @@ terraform.rc
 
 # temp files
 tmp/
+
+# env
+**/env/
+**.env

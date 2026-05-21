@@ -1,118 +1,102 @@
+locals {
+  # Count instances by node_type across both aap_instances and other_instances
+  bastion_count = (
+    try(sum([for k, v in var.aap_instances : v.count if v.node_type == "bastion"]), 0) +
+    try(sum([for k, v in var.other_instances : v.count if v.node_type == "bastion"]), 0)
+  )
+
+  gateway_count = (
+    try(sum([for k, v in var.aap_instances : v.count if v.node_type == "gateway"]), 0) +
+    try(sum([for k, v in var.other_instances : v.count if v.node_type == "gateway"]), 0)
+  )
+
+  single_node_count = (
+    try(sum([for k, v in var.aap_instances : v.count if v.node_type == "single-node"]), 0) +
+    try(sum([for k, v in var.other_instances : v.count if v.node_type == "single-node"]), 0)
+  )
+
+  gateway_needs_ssh = local.bastion_count == 0
+
+  # Default security groups based on node_type
+  # Only include node-type-specific groups if instances of that type are deployed
+  default_security_groups = {
+    "single-node" = concat(
+      ["base", "instance_eips"],
+      local.single_node_count > 0 ? ["single_node"] : []
+    )
+    "gateway" = concat(
+      ["base", "instance_eips"],
+      local.gateway_count > 0 ? ["gateway"] : []
+    )
+    "controller" = ["base", "instance_eips"]
+    "hub"        = ["base", "instance_eips"]
+    "eda"        = ["base", "instance_eips"]
+    "execution"  = ["base", "instance_eips"]
+    "database"   = ["base", "instance_eips"]
+    "dashboard"  = ["base", "instance_eips"]
+    "bastion" = concat(
+      ["base", "instance_eips"],
+      local.bastion_count > 0 ? ["bastion"] : []
+    )
+  }
+}
+
+resource "aws_security_group" "base" {
+  name        = "${var.aws_name_prefix}-base"
+  description = "Base connectivity: VPC internal ingress + internet egress"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "All traffic from VPC"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [var.aws_vpc_cidr]
+  }
+
+  egress {
+    description = "All outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = local.aws_tags
+}
+
+resource "aws_security_group" "instance_eips" {
+  name        = "${var.aws_name_prefix}-instance-eips"
+  description = "Communication between all instance Elastic IPs"
+  vpc_id      = module.vpc.vpc_id
+
+  tags = local.aws_tags
+}
+
+resource "aws_security_group_rule" "instance_eip" {
+  for_each = module.ec2_instances.eips
+
+  type        = "ingress"
+  description = "Allow all ports from instance EIP ${each.key}"
+  from_port   = 0
+  to_port     = 0
+  protocol    = "-1"
+  cidr_blocks = ["${each.value.public_ip}/32"]
+
+  security_group_id = aws_security_group.instance_eips.id
+}
+
 resource "aws_security_group" "bastion" {
+  count = local.bastion_count > 0 ? 1 : 0
+
   name        = "${var.aws_name_prefix}-bastion"
-  description = "Bastion ingress rules"
+  description = "Bastion ingress: SSH from internet"
   vpc_id      = module.vpc.vpc_id
 
   ingress {
     description = "SSH"
-    from_port   = "22"
-    to_port     = "22"
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = local.aws_tags
-}
-
-resource "aws_security_group" "controller" {
-  name        = "${var.aws_name_prefix}-controller"
-  description = "Controller ingress rules"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress {
-    description = "SSH"
-    from_port   = "22"
-    to_port     = "22"
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "Controller UI over HTTPS"
-    from_port   = var.controller_ui_port
-    to_port     = var.controller_ui_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "Automation mesh"
-    from_port   = "27199"
-    to_port     = "27199"
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = local.aws_tags
-}
-
-resource "aws_security_group" "hub" {
-  name        = "${var.aws_name_prefix}-hub"
-  description = "Automation Hub ingress rules"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress {
-    description = "SSH"
-    from_port   = "22"
-    to_port     = "22"
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "Hub UI over HTTPS"
-    from_port   = var.hub_ui_port
-    to_port     = var.hub_ui_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = local.aws_tags
-}
-
-resource "aws_security_group" "eda" {
-  name        = "${var.aws_name_prefix}-eda"
-  description = "EDA ingress rules"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress {
-    description = "SSH"
-    from_port   = "22"
-    to_port     = "22"
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "EDA UI over HTTPS"
-    from_port   = var.eda_ui_port
-    to_port     = var.eda_ui_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "EDA Webhook ports"
-    from_port   = var.eda_webhook_port_start
-    to_port     = var.eda_webhook_port_end
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = local.aws_tags
-}
-
-resource "aws_security_group" "gateway" {
-  name        = "${var.aws_name_prefix}-gateway"
-  description = "Automation Hub ingress rules"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress {
-    description = "SSH"
-    from_port   = "22"
-    to_port     = "22"
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "Gateway UI over HTTPS"
-    from_port   = var.gateway_ui_port
-    to_port     = var.gateway_ui_port
+    from_port   = 22
+    to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -121,49 +105,43 @@ resource "aws_security_group" "gateway" {
 }
 
 resource "aws_security_group" "single_node" {
+  count = local.single_node_count > 0 ? 1 : 0
+
   name        = "${var.aws_name_prefix}-single-node"
-  description = "Additional ingress rules for single node AAP deployments"
+  description = "Single-node ingress: HTTP, HTTPS, 8448, and SSH (when no bastion)"
   vpc_id      = module.vpc.vpc_id
 
+  dynamic "ingress" {
+    for_each = local.gateway_needs_ssh ? [1] : []
+    content {
+      description = "SSH (no bastion present)"
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+
   ingress {
-    description = "Controller UI on single node"
-    from_port   = var.single_node_controller_port
-    to_port     = var.single_node_controller_port
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   ingress {
-    description = "Hub UI on single node"
-    from_port   = var.single_node_hub_port
-    to_port     = var.single_node_hub_port
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   ingress {
-    description = "EDA UI on single node"
-    from_port   = var.single_node_eda_port
-    to_port     = var.single_node_eda_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "EDA Webhook ports"
-    from_port   = var.eda_webhook_port_start
-    to_port     = var.eda_webhook_port_end
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "Gateway UI proxy on single node"
-    from_port   = var.single_node_gateway_proxy_port
-    to_port     = var.single_node_gateway_proxy_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "Automation mesh"
-    from_port   = "27199"
-    to_port     = "27199"
+    description = "Port 8448"
+    from_port   = 8448
+    to_port     = 8448
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -171,195 +149,46 @@ resource "aws_security_group" "single_node" {
   tags = local.aws_tags
 }
 
-resource "aws_security_group" "execution" {
-  name        = "${var.aws_name_prefix}-execution"
-  description = "Execution node ingress rules"
+resource "aws_security_group" "gateway" {
+  count = local.gateway_count > 0 ? 1 : 0
+
+  name        = "${var.aws_name_prefix}-gateway"
+  description = "Gateway ingress: HTTP, HTTPS, 8448, and SSH (when no bastion)"
   vpc_id      = module.vpc.vpc_id
 
   ingress {
-    description = "SSH"
-    from_port   = "22"
-    to_port     = "22"
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "Automation mesh"
-    from_port   = "27199"
-    to_port     = "27199"
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = local.aws_tags
-}
-
-resource "aws_security_group" "dashboard" {
-  name        = "${var.aws_name_prefix}-dashboard"
-  description = "Dashboard node ingress rules"
-  vpc_id      = module.vpc.vpc_id
-
   ingress {
-    description = "SSH"
-    from_port   = "22"
-    to_port     = "22"
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "Dashboard UI over HTTPS"
-    from_port   = var.dashboard_ui_port
-    to_port     = var.dashboard_ui_port
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = local.aws_tags
-}
-
-# separate security group definition from rules definitions to work around
-# lifecycle dependency issues
-resource "aws_security_group" "aap_eips" {
-  name        = "${var.aws_name_prefix}-aap_eips"
-  description = "Communication between all AAP Elastic IPs"
-  vpc_id      = module.vpc.vpc_id
-
-  tags = local.aws_tags
-}
-
-resource "aws_security_group_rule" "bastion_eip" {
-  count       = var.deploy_bastion ? 1 : 0
-  type        = "ingress"
-  description = "Allow all ports from an bastion node EIP"
-  from_port   = "0"
-  to_port     = "0"
-  protocol    = "-1"
-  cidr_blocks = ["${aws_eip.bastion[count.index].public_ip}/32"]
-
-  security_group_id = aws_security_group.aap_eips.id
-}
-
-resource "aws_security_group_rule" "single_node_eip" {
-  count       = var.deploy_single_node ? var.single_node_instance_count : 0
-  type        = "ingress"
-  description = "Allow all ports from a single node EIP"
-  from_port   = "0"
-  to_port     = "0"
-  protocol    = "-1"
-  cidr_blocks = ["${aws_eip.single_node[count.index].public_ip}/32"]
-
-  security_group_id = aws_security_group.aap_eips.id
-}
-
-resource "aws_security_group_rule" "controller_eip" {
-  count       = var.deploy_single_node ? 0 : var.controller_instance_count
-  type        = "ingress"
-  description = "Allow all ports from a controller node EIP"
-  from_port   = "0"
-  to_port     = "0"
-  protocol    = "-1"
-  cidr_blocks = ["${aws_eip.controller[count.index].public_ip}/32"]
-
-  security_group_id = aws_security_group.aap_eips.id
-}
-
-resource "aws_security_group_rule" "hub_eip" {
-  count       = var.deploy_single_node ? 0 : var.hub_instance_count
-  type        = "ingress"
-  description = "Allow all ports from a hub node EIP"
-  from_port   = "0"
-  to_port     = "0"
-  protocol    = "-1"
-  cidr_blocks = ["${aws_eip.hub[count.index].public_ip}/32"]
-
-  security_group_id = aws_security_group.aap_eips.id
-}
-
-resource "aws_security_group_rule" "eda_eip" {
-  count       = var.deploy_single_node ? 0 : var.eda_instance_count
-  type        = "ingress"
-  description = "Allow all ports from an EDA node EIP"
-  from_port   = "0"
-  to_port     = "0"
-  protocol    = "-1"
-  cidr_blocks = ["${aws_eip.eda[count.index].public_ip}/32"]
-
-  security_group_id = aws_security_group.aap_eips.id
-}
-
-resource "aws_security_group_rule" "gateway_eip" {
-  count       = var.deploy_single_node ? 0 : var.gateway_instance_count
-  type        = "ingress"
-  description = "Allow all ports from a gateway node EIP"
-  from_port   = "0"
-  to_port     = "0"
-  protocol    = "-1"
-  cidr_blocks = ["${aws_eip.gateway[count.index].public_ip}/32"]
-
-  security_group_id = aws_security_group.aap_eips.id
-}
-
-resource "aws_security_group_rule" "database_eip" {
-  count       = var.deploy_single_node ? 0 : var.database_instance_count
-  type        = "ingress"
-  description = "Allow all ports from a database node EIP"
-  from_port   = "0"
-  to_port     = "0"
-  protocol    = "-1"
-  cidr_blocks = ["${aws_eip.database[count.index].public_ip}/32"]
-
-  security_group_id = aws_security_group.aap_eips.id
-}
-
-resource "aws_security_group_rule" "execution_eip" {
-  count       = var.deploy_single_node ? 0 : var.execution_instance_count
-  type        = "ingress"
-  description = "Allow all ports from an execution node EIP"
-  from_port   = "0"
-  to_port     = "0"
-  protocol    = "-1"
-  cidr_blocks = ["${aws_eip.execution[count.index].public_ip}/32"]
-
-  security_group_id = aws_security_group.aap_eips.id
-}
-
-resource "aws_security_group_rule" "dashboard_eip" {
-  count       = var.deploy_dashboard ? 1 : 0
-  type        = "ingress"
-  description = "Allow all ports from a dashboard node EIP"
-  from_port   = "0"
-  to_port     = "0"
-  protocol    = "-1"
-  cidr_blocks = ["${aws_eip.dashboard[count.index].public_ip}/32"]
-
-  security_group_id = aws_security_group.aap_eips.id
-}
-
-resource "aws_security_group" "public_subnets" {
-  name        = "${var.aws_name_prefix}-public-subnets"
-  description = "Ingress rules for intra-VPC connections between public subnets"
-  vpc_id      = module.vpc.vpc_id
-
   ingress {
-    from_port   = "0"
-    to_port     = "0"
-    protocol    = "-1"
-    cidr_blocks = module.vpc.public_subnets_cidr_blocks
+    description = "Port 8448"
+    from_port   = 8448
+    to_port     = 8448
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = local.aws_tags
-}
-
-resource "aws_security_group" "default_egress" {
-  name        = "${var.aws_name_prefix}-default-egress"
-  description = "Default egress rules for all instances"
-  vpc_id      = module.vpc.vpc_id
-
-  egress {
-    from_port   = "0"
-    to_port     = "0"
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic "ingress" {
+    for_each = local.gateway_needs_ssh ? [1] : []
+    content {
+      description = "SSH (no bastion present)"
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
   }
 
   tags = local.aws_tags

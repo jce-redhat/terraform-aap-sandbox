@@ -1,4 +1,19 @@
 # create a network load balancer for SSL pass-through to the gateway servers
+locals {
+  # Build gateway instance keys from input configuration (known at plan time)
+  gateway_instance_keys = flatten([
+    for instance_key, config in var.aap_instances : [
+      for i in range(config.count) : "${instance_key}-${i}"
+      if config.node_type == "gateway"
+    ]
+  ])
+
+  # Create map of gateway instances for load balancer attachment
+  gateway_instances = {
+    for key in local.gateway_instance_keys : key => module.ec2_instances.instances[key]
+  }
+}
+
 resource "aws_lb" "aap_nlb" {
   count = var.deploy_with_nlb ? 1 : 0
 
@@ -26,7 +41,7 @@ resource "aws_lb_target_group" "gateway" {
 
   name        = "gateway-target-group-${local.deployment_id}"
   vpc_id      = module.vpc.vpc_id
-  port        = var.gateway_ui_port
+  port        = 443
   protocol    = "TCP"
   target_type = "instance"
 
@@ -55,9 +70,9 @@ resource "aws_lb_target_group" "gateway" {
 }
 
 resource "aws_lb_target_group_attachment" "gateway" {
-  count = var.deploy_with_nlb ? length(aws_instance.gateway) : 0
+  for_each = var.deploy_with_nlb ? local.gateway_instances : {}
 
   target_group_arn = aws_lb_target_group.gateway[0].arn
-  target_id        = aws_instance.gateway[count.index].id
-  port             = var.gateway_ui_port
+  target_id        = each.value.id
+  port             = 443
 }

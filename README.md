@@ -1,11 +1,14 @@
 # terraform-aap-sandbox - Build AWS infrastructure for Ansible Automation Platform demos
 
 Terraform configuration for building Ansible Automation Platform (AAP) infrastructure
-in an AWS VPC.  Deployment options include:
+in an AWS VPC using a map-based instance configuration. Supports single-node and multi-node
+topologies with automatic security group assignment and per-instance architecture selection.
+Deployment options include:
 
-* Creating one or more instances for single node deployments using the containerized AAP installer
-* Creating one or more controller, hub, or EDA controller instances for a larger deployment
-* Creating an RDS PostgreSQL instance to use as an external (non-managed) database
+* Single-node or multi-node AAP deployments (gateway, controller, hub, EDA, execution nodes)
+* Deploy x86_64, arm64, or a mix of instance architectures in the same deployment
+* Optional RDS PostgreSQL database, Network Load Balancer, and bastion host
+* Optional non-AAP instances for monitoring, integration tools, or other workloads
 
 ## Prerequisites
 
@@ -44,3 +47,28 @@ export AWS_SECRET_ACCESS_KEY=<your_secret_key>
 ```
 terraform apply
 ```
+
+## Features
+
+**Instance Configuration:**
+* Unified `aap_instances` map for all AAP components (single-node, gateway, controller, hub, EDA, execution, database, dashboard, bastion)
+* `other_instances` map for non-AAP workloads (monitoring, integration tools, etc.)
+* Per-instance CPU architecture selection (x86_64, arm64) for mixed deployments
+* Automatic instance naming and DNS record creation
+
+**Security:**
+* Automatic security group assignment based on node type
+* Conditional SSH access - auto-enables on gateway/single-node instances when no bastion exists
+* IMDSv2 enforced on all instances
+
+**Tested Deployment Topologies:**
+* Single-node containerized AAP (growth topology)
+* Multi-node container deployment with gateway, controller, hub, EDA, and execution nodes
+* RPM-based deployment with dedicated database instance
+* Non-AAP instances only (no AAP deployment)
+
+**Optional Integrations:**
+* RDS PostgreSQL for managed external database
+* Network Load Balancer for gateway instances
+* Bastion/jump host with automatic SSH rule adjustments
+* IAM instance profiles for EC2 instances

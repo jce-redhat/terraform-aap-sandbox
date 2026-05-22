@@ -25,18 +25,18 @@ locals {
         # DNS-friendly name (single: "aap", multiple: "aap0", "aap1")
         name = config.count == 1 ? (
           config.name_prefix != "" ? config.name_prefix : local.default_name_prefixes[config.node_type]
-        ) : (
+          ) : (
           "${config.name_prefix != "" ? config.name_prefix : local.default_name_prefixes[config.node_type]}${i}"
         )
 
         # Instance configuration
-        instance_key = instance_key
+        instance_key  = instance_key
         instance_type = config.instance_type != "" ? config.instance_type : var.instance_type
-        disk_size = config.disk_size != 0 ? config.disk_size : var.disk_size
-        key_name = config.key_name != "" ? config.key_name : var.key_name
+        disk_size     = config.disk_size != 0 ? config.disk_size : var.disk_size
+        key_name      = config.key_name != "" ? config.key_name : var.key_name
         # AMI selection priority: image_id > ami_ids[node_os-arch] > ami_ids[rhel9-arch]
         # This respects the arch field even when node_os is not specified
-        ami = config.image_id != "" ? config.image_id : var.ami_ids["${config.node_os != "" ? config.node_os : "rhel9"}-${config.arch != "" ? config.arch : var.arch}"]
+        ami                  = config.image_id != "" ? config.image_id : var.ami_ids["${config.node_os != "" ? config.node_os : "rhel9"}-${config.arch != "" ? config.arch : var.arch}"]
         security_groups      = config.security_groups
         node_type            = config.node_type
         create_eip           = config.create_eip

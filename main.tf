@@ -89,7 +89,12 @@ module "ec2_instances" {
     },
     local.bastion_count > 0 ? { bastion = aws_security_group.bastion[0].id } : {},
     local.single_node_count > 0 ? { single_node = aws_security_group.single_node[0].id } : {},
-    local.gateway_count > 0 ? { gateway = aws_security_group.gateway[0].id } : {}
+    local.gateway_count > 0 ? { gateway = aws_security_group.gateway[0].id } : {},
+    local.splunk_count > 0 ? { splunk = aws_security_group.splunk[0].id } : {},
+    local.hashivault_count > 0 ? { hashivault = aws_security_group.hashivault[0].id } : {},
+    local.idm_count > 0 ? { idm = aws_security_group.idm[0].id } : {},
+    local.keycloak_count > 0 ? { keycloak = aws_security_group.keycloak[0].id } : {},
+    local.mattermost_count > 0 ? { mattermost = aws_security_group.mattermost[0].id } : {}
   )
 
   tags = local.aws_tags

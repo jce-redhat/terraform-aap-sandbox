@@ -158,7 +158,9 @@ rds_password    = "secure_password"  # Or use: export TF_VAR_rds_password="..."
 
 ## Node Types
 
-Valid `node_type` values:
+### AAP Node Types (aap_instances)
+
+Valid `node_type` values for `aap_instances`:
 - `single-node` - All-in-one containerized AAP
 - `gateway` - Gateway component
 - `controller` - Automation controller
@@ -168,6 +170,20 @@ Valid `node_type` values:
 - `database` - PostgreSQL database (RPM deployments)
 - `dashboard` - Dashboard component
 - `bastion` - SSH jump host
+
+### Integration Node Types (other_instances)
+
+Node types with automatic security group assignment in `other_instances`:
+
+| node_type | Ports | Description |
+|-----------|-------|-------------|
+| `splunk` | 443, 9997, 8089, 8088 | HTTPS, forwarder, management, HEC |
+| `hashivault` | 443, 8200 | HTTPS, Vault API/UI |
+| `idm` | 443, 389, 636, 88, 464, 53 | Web UI, LDAP/LDAPS, Kerberos, DNS |
+| `keycloak` | 443, 8080, 8443 | HTTPS, HTTP, Keycloak default HTTPS |
+| `mattermost` | 443, 8065 | HTTPS, Mattermost server |
+
+**Arbitrary node types:** Any other `node_type` value is allowed in `other_instances` and will receive base connectivity (VPC internal + internet egress + inter-instance EIP communication). Add custom security groups via the `security_groups` field.
 
 ## AMI and Architecture
 
@@ -215,14 +231,27 @@ aap_instances = {
 
 ## Other Instances
 
-For non-AAP instances (Splunk, monitoring, etc.), use `other_instances`:
+For non-AAP instances, use `other_instances`. The `node_type` can be any string - known integration types (see above) get automatic security groups, arbitrary types get base connectivity only.
 
+**Integration node type with automatic security groups:**
 ```hcl
 other_instances = {
   splunk = {
     count       = 1
-    name_prefix = "splunk"  # Required for other_instances
-    node_type   = "splunk"  # Can be any string
+    name_prefix = "splunk"
+    node_type   = "splunk"  # Automatically gets splunk security group
+  }
+}
+```
+
+**Arbitrary node type with custom security groups:**
+```hcl
+other_instances = {
+  myapp = {
+    count           = 1
+    name_prefix     = "myapp"
+    node_type       = "myapp"  # Gets base connectivity only
+    security_groups = ["my-custom-sg"]  # Add your own security groups
   }
 }
 ```

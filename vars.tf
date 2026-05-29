@@ -176,7 +176,7 @@ variable "create_instance_profile" {
 variable "rhel9_ami_name" {
   description = "Search string for RHEL 9 AMI"
   type        = string
-  default     = "RHEL-9.4*Hourly*"
+  default     = "RHEL-9.7*Hourly*"
 }
 variable "rhel8_ami_name" {
   description = "Search string for RHEL 8 AMI"

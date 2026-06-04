@@ -25,3 +25,24 @@ output "rds_hostname" {
   description = "RDS instance hostname"
   value       = length(aws_db_instance.aap) > 0 ? aws_db_instance.aap[0].address : null
 }
+
+# CloudTrail monitoring outputs
+output "instance_monitoring_queue_url" {
+  description = "SQS queue URL for EC2 instance events (for AAP EDA rulebook configuration)"
+  value       = var.enable_cloudtrail_monitoring ? aws_sqs_queue.instance_events[0].url : null
+}
+
+output "instance_monitoring_queue_arn" {
+  description = "SQS queue ARN for EC2 instance events"
+  value       = var.enable_cloudtrail_monitoring ? aws_sqs_queue.instance_events[0].arn : null
+}
+
+output "cloudtrail_trail_name" {
+  description = "Name of the CloudTrail trail for instance monitoring"
+  value       = var.enable_cloudtrail_monitoring ? aws_cloudtrail.monitoring[0].name : null
+}
+
+output "cloudtrail_trail_arn" {
+  description = "ARN of the CloudTrail trail for instance monitoring"
+  value       = var.enable_cloudtrail_monitoring ? aws_cloudtrail.monitoring[0].arn : null
+}

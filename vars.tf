@@ -243,3 +243,20 @@ variable "rds_password" {
   default     = ""
   sensitive   = true
 }
+
+# CloudTrail monitoring variables
+variable "enable_cloudtrail_monitoring" {
+  description = "Enable CloudTrail + EventBridge + SQS for EC2 instance monitoring"
+  type        = bool
+  default     = false
+}
+variable "monitored_instance_tags" {
+  description = "Map of required tags for instances to trigger monitoring events (default: no tag filtering, captures all RunInstances in current region)"
+  type        = map(string)
+  default     = {}
+}
+variable "cloudtrail_s3_retention_days" {
+  description = "Number of days to retain CloudTrail logs in S3"
+  type        = number
+  default     = 90
+}

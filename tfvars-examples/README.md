@@ -8,6 +8,7 @@ Example `terraform.tfvars` files for AAP deployment topologies using the `aap_in
 - **container-enterprise-topology.tfvars** - Multi-node with gateway, controller, hub, EDA, execution nodes, RDS, NLB
 - **rpm-growth-topology.tfvars** - Traditional RPM deployment with separate database instance
 - **single-node-arm-with-vault.tfvars** - ARM-based single-node AAP (RHEL 10, 120GB) with x86_64 Vault instance
+- **single-node-with-monitoring.tfvars** - Single-node AAP with CloudTrail + EventBridge + SQS monitoring
 - **other-instances-only.tfvars** - Non-AAP instances only (Splunk, Prometheus) with no AAP deployment
 
 ## Quick Start

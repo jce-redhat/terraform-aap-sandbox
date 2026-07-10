@@ -12,6 +12,10 @@ locals {
     for k, v in var.aap_instances : v.count if v.node_type == "single-node"
   ]), 0)
 
+  portal_count = try(sum([
+    for k, v in var.aap_instances : v.count if v.node_type == "portal"
+  ]), 0)
+
   # Integration node types (only supported in other_instances)
   splunk_count = try(sum([
     for k, v in var.other_instances : v.count if v.node_type == "splunk"
@@ -33,7 +37,7 @@ locals {
     for k, v in var.other_instances : v.count if v.node_type == "mattermost"
   ]), 0)
 
-  gateway_needs_ssh = local.bastion_count == 0
+  instance_needs_ssh = local.bastion_count == 0
 
   # Default security groups based on node_type
   # Only include node-type-specific groups if instances of that type are deployed
@@ -52,6 +56,10 @@ locals {
     "execution"  = ["base", "instance_eips"]
     "database"   = ["base", "instance_eips"]
     "dashboard"  = ["base", "instance_eips"]
+    "portal" = concat(
+      ["base", "instance_eips"],
+      local.portal_count > 0 ? ["portal"] : []
+    )
     "bastion" = concat(
       ["base", "instance_eips"],
       local.bastion_count > 0 ? ["bastion"] : []
@@ -150,7 +158,7 @@ resource "aws_security_group" "single_node" {
   vpc_id      = module.vpc.vpc_id
 
   dynamic "ingress" {
-    for_each = local.gateway_needs_ssh ? [1] : []
+    for_each = local.instance_needs_ssh ? [1] : []
     content {
       description = "SSH (no bastion present)"
       from_port   = 22
@@ -219,7 +227,7 @@ resource "aws_security_group" "gateway" {
   }
 
   dynamic "ingress" {
-    for_each = local.gateway_needs_ssh ? [1] : []
+    for_each = local.instance_needs_ssh ? [1] : []
     content {
       description = "SSH (no bastion present)"
       from_port   = 22
@@ -227,6 +235,43 @@ resource "aws_security_group" "gateway" {
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
     }
+  }
+
+  tags = local.aws_tags
+}
+
+resource "aws_security_group" "portal" {
+  count = local.portal_count > 0 ? 1 : 0
+
+  name        = "${var.aws_name_prefix}-portal"
+  description = "Portal ingress: HTTP, HTTPS, and SSH (when no bastion)"
+  vpc_id      = module.vpc.vpc_id
+
+  dynamic "ingress" {
+    for_each = local.instance_needs_ssh ? [1] : []
+    content {
+      description = "SSH (no bastion present)"
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+
+  ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = local.aws_tags

@@ -10,6 +10,7 @@ locals {
     "database"    = "db"
     "dashboard"   = "dashboard"
     "bastion"     = "bastion"
+    "portal"      = "portal"
   }
 
   # Flatten instances map to individual instances

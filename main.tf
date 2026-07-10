@@ -90,6 +90,7 @@ module "ec2_instances" {
     local.bastion_count > 0 ? { bastion = aws_security_group.bastion[0].id } : {},
     local.single_node_count > 0 ? { single_node = aws_security_group.single_node[0].id } : {},
     local.gateway_count > 0 ? { gateway = aws_security_group.gateway[0].id } : {},
+    local.portal_count > 0 ? { portal = aws_security_group.portal[0].id } : {},
     local.splunk_count > 0 ? { splunk = aws_security_group.splunk[0].id } : {},
     local.hashivault_count > 0 ? { hashivault = aws_security_group.hashivault[0].id } : {},
     local.idm_count > 0 ? { idm = aws_security_group.idm[0].id } : {},

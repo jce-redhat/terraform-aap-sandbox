@@ -89,10 +89,11 @@ variable "aap_instances" {
         "execution",
         "database",
         "dashboard",
-        "bastion"
+        "bastion",
+        "portal"
       ], v.node_type)
     ])
-    error_message = "node_type must be one of: single-node, gateway, controller, eda, hub, execution, database, dashboard, bastion"
+    error_message = "node_type must be one of: single-node, gateway, controller, eda, hub, execution, database, dashboard, bastion, portal"
   }
 
   validation {

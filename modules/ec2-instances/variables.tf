@@ -58,3 +58,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "portal_user_data" {
+  description = "User data to attach to portal instances"
+  type        = string
+  default     = null
+}

@@ -4,7 +4,7 @@ output "instances" {
     for k, v in aws_instance.aap : k => {
       id           = v.id
       private_ip   = v.private_ip
-      public_ip    = v.public_ip
+      public_ip    = lookup(aws_eip.aap, k, null) != null ? aws_eip.aap[k].public_ip : v.public_ip
       name         = v.tags["Name"]
       node_type    = v.tags["NodeType"]
       instance_key = v.tags["InstanceKey"]

@@ -111,6 +111,7 @@ variable "aap_instances" {
     ])
     error_message = "arch must be empty or one of: x86_64, arm64"
   }
+
 }
 
 variable "other_instances" {
@@ -243,6 +244,13 @@ variable "rds_password" {
   type        = string
   default     = ""
   sensitive   = true
+}
+
+# Portal instance variables
+variable "portal_user_data_file" {
+  description = "Path to the portal instance user-data file (relative to the project root)"
+  type        = string
+  default     = "portal-user-data"
 }
 
 # CloudTrail monitoring variables

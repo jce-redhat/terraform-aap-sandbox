@@ -62,6 +62,7 @@ resource "aws_instance" "aap" {
   key_name             = each.value.key_name
   subnet_id            = each.value.subnet_id
   iam_instance_profile = each.value.iam_instance_profile != "" ? each.value.iam_instance_profile : null
+  user_data            = each.value.node_type == "portal" ? var.portal_user_data : null
 
   vpc_security_group_ids = [
     for sg_name in each.value.security_groups : var.security_group_ids[sg_name]

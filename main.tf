@@ -76,6 +76,8 @@ module "ec2_instances" {
   # Merge AAP instances (with IAM profile and security groups) and other instances (with security groups)
   ec2_instances = merge(local.aap_instances_with_profile, local.other_instances_with_security)
 
+  portal_user_data = fileexists("${path.module}/${var.portal_user_data_file}") ? file("${path.module}/${var.portal_user_data_file}") : null
+
   ami_ids       = local.ami_ids
   instance_type = var.aws_instance_type
   key_name      = var.aws_key_name
